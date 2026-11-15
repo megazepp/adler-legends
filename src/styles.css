@@ -172,3 +172,34 @@
 @media(max-width:1050px){.upgrade-layout{grid-template-columns:minmax(155px,.7fr) minmax(230px,1fr) minmax(230px,.95fr);gap:12px}.upgrade-console{padding-left:12px}.footballer-render{height:420px}.upgrade-screen{padding:16px}}
 @media(max-width:760px){.upgrade-screen{padding:12px;margin:0 -5px 18px;border-radius:8px}.upgrade-layout{grid-template-columns:1fr 1fr;gap:12px}.upgrade-player-art{grid-column:1;grid-row:1;min-height:340px}.footballer-render{height:300px}.upgrade-profile{grid-column:2;grid-row:1}.player-card-visual{width:86px;height:118px;margin-right:9px}.card-player-mark{font-size:47px}.profile-identity{display:block}.profile-identity h2{font-size:20px}.ovr-number{font-size:23px}.profile-meta{gap:4px}.profile-meta span{font-size:7px}.upgrade-stat{grid-template-columns:25px 22px 1fr;gap:4px;padding:5px}.upgrade-stat small{font-size:7px}.upgrade-console{grid-column:1/-1;grid-row:2;border-left:0;border-top:1px solid #a8b4e044;padding:14px 0 0}.upgrade-preview{margin-top:13px}.upgrade-items{margin-top:12px}.booster{height:64px}}
 @media(max-width:460px){.upgrade-layout{grid-template-columns:1fr}.upgrade-player-art{grid-column:1;grid-row:1;min-height:290px;max-height:310px}.footballer-render{height:270px;width:70%}.upgrade-profile{grid-column:1;grid-row:2}.upgrade-console{grid-column:1;grid-row:3}.player-card-visual{width:100px;height:136px}.profile-identity{display:flex}.upgrade-stat{grid-template-columns:34px 28px 1fr;padding:7px}.upgrade-stat small{font-size:8px}.upgrade-topline{font-size:12px}.upgrade-topline>div{gap:8px}.upgrade-preview>div{font-size:11px}}
+
+
+/* Global visual direction: premium collectible-football game UI */
+.game-world{--club:#8d42f4;--club-dark:#5422ad;--gold:#e8d078;--line:#9ba9dc36;color:#f4f5ff;background:radial-gradient(ellipse at 68% -10%,#38296c 0,transparent 38%),linear-gradient(145deg,#101426,#151a32 55%,#0d1224)}
+.theme-blue,.theme-gold,.theme-green{--club:#8d42f4;--club-dark:#5422ad}
+.game-sidebar{background:linear-gradient(180deg,#171a34,#101426);border-right:1px solid #a9b6e02c;box-shadow:12px 0 35px #0003}
+.brand-mark em{color:#b58aff}.club-identity{background:linear-gradient(120deg,#272b50,#1b203c);border-color:#a7b5ed35;box-shadow:inset 0 1px #ffffff12}
+.game-sidebar nav button{color:#c2c9e5;border-radius:4px}.game-sidebar nav button:hover{background:#ffffff0c}.game-sidebar nav button.active{background:linear-gradient(90deg,#6828c8,#432078);color:#fff;box-shadow:0 5px 20px #6828c855,inset 3px 0 #caa9ff}
+.sidebar-bottom{color:#aeb7d7}.game-main{max-width:1700px}.game-top{border-bottom-color:#a8b6e02d}.game-top h1{color:#f7f6ff;text-shadow:0 2px 15px #a78bfa25}
+.wallet>div{background:linear-gradient(145deg,#252b4d,#191f39);border:1px solid #9daee13d;box-shadow:inset 0 1px #ffffff12}.wallet small{color:#b4bddb}
+.game-page{color:#f1f3ff}.section-head{border-bottom-color:#9daee02d}.section-head h2,.game-page h2,.game-page h3{color:#f7f5ff}
+.hero-match{border:1px solid #9b8bda55;border-radius:7px;background:linear-gradient(115deg,#202647,#171d3a 52%,#292252);box-shadow:0 20px 55px #0006,inset 0 1px #ffffff16}
+.hero-copy h2 em{color:#c6a2ff}.hero-copy p,.intro-text{color:#bdc6e1}
+.big-action{background:linear-gradient(105deg,#6825d1,#a43dff);box-shadow:0 7px 24px #6825d155;border:1px solid #c39aff66}
+.versus-card{background:radial-gradient(ellipse at 50% 55%,#6551a533,transparent 65%)}
+.team-crest,.crest-small{background:linear-gradient(145deg,#a24dff,#45208c);filter:drop-shadow(0 5px 9px #0007)}
+.world-card,.stat-card,.fixture-card,.league-table,.building-card,.node-card,.match-audio-panel,.event-log,.competition-card,.development-card{background:linear-gradient(145deg,#242a4a,#191f38);border-color:#9daee033;box-shadow:0 10px 24px #0003,inset 0 1px #ffffff0b}
+.fixture-card.next{background:linear-gradient(110deg,#34265a,#202442);border-color:#9b70e8}
+.fixture-card>span,.kicker{color:#d3b6ff}.fixture-card>div strong{color:#f1d98b}
+.league-table{background:linear-gradient(145deg,#242a4a,#191f38)}.table-row,.table-head{border-bottom-color:#ffffff17}.table-row.own{background:#6f3ab52c}
+.building-card button,.node-card button{background:linear-gradient(110deg,#5e2ab0,#38206f);border-color:#a17adf;color:#f5efff}
+.stadium-art{border-color:#a78be055;box-shadow:0 15px 35px #0005}
+.match-pitch{border:1px solid #9f9de0;border-radius:5px;box-shadow:0 12px 32px #0006}
+.match-controls,.event-log{background:linear-gradient(145deg,#242a4a,#191f38);border-color:#9daee033}
+.player-row{background:linear-gradient(100deg,#293052,#1b213e);border-color:#8f9bc53a;color:#f4f4ff}.player-row.chosen{border-color:#b28aff;background:linear-gradient(100deg,#55318c,#262344);box-shadow:0 0 18px #8e54e544}
+.power-pill,.power-card{background:linear-gradient(120deg,#5f2cae,#31204f);border-color:#b08ae9;color:#f6edff}
+.section-head,.section-head h2{color:#f6f3ff}
+.game-footer{color:#b4bbd8;border-top-color:#ffffff1a}
+.mobile-game-nav{background:#11162c;border-top:1px solid #9eace044;box-shadow:0 -10px 30px #0007}
+.mobile-game-nav button{color:#aeb8dc}.mobile-game-nav button.active{color:#d5b4ff}
+@media(max-width:700px){.game-top{border-bottom-color:#9daee033}.hero-match{border-radius:6px}.wallet>div{background:#242a4a}.game-page{padding-top:14px}}
