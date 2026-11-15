@@ -114,6 +114,6 @@ function MatchArena({match,game}){
   <div className="pitch-caption">BALLBESIT & POSITIONSSPIEL · MINUTE {minute}</div>
  </div>;
 }
-\nfunction BuildingCard({b,game,upgrade}){const level=game.buildings[b.id]||0,cost=Math.floor(b.base*Math.pow(1.7,level));return <div className="building-card"><span>{b.icon}</span><div><b>{b.name}</b><small>Stufe {level} · {b.desc}</small></div><button onClick={()=>upgrade(b.id)}>AUSBAUEN · {cost} 🪙</button></div>}
+function BuildingCard({b,game,upgrade}){const level=game.buildings[b.id]||0,cost=Math.floor(b.base*Math.pow(1.7,level));return <div className="building-card"><span>{b.icon}</span><div><b>{b.name}</b><small>Stufe {level} · {b.desc}</small></div><button onClick={()=>upgrade(b.id)}>AUSBAUEN · {cost} 🪙</button></div>}
 function NodeCard({n,game,unlock}){if(!n)return null;const yes=game.unlocked.includes(n.id),locked=n.requires&&!game.unlocked.includes(n.requires);return <div className="node-card"><span>{n.icon}</span><div><b>{n.name}</b><small>{n.desc}</small></div><button disabled={yes||locked||game.development<n.cost} onClick={()=>unlock(n)}>{yes?'FREI':n.cost+' EP'}</button></div>}
 export default App;
