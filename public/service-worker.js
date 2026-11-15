@@ -1,4 +1,4 @@
-const CACHE_NAME = 'adler-legends-v3';
+const CACHE_NAME = 'adler-legends-v4';
 const APP_SHELL = ['/adler-legends/', '/adler-legends/manifest.webmanifest', '/adler-legends/icons/adler.svg'];
 
 self.addEventListener('install', (event) => {
@@ -16,7 +16,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
   event.respondWith(
-    fetch(event.request, event.request.mode === 'navigate' ? { cache: 'no-store' } : {})
+    fetch(event.request, { cache: 'no-store' })
       .then((response) => {
         if (response.ok) {
           const copy = response.clone();
