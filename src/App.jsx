@@ -21,7 +21,7 @@ const BUILDINGS = [
 ];
 const INITIAL = {
   coins: 180, fans: 42, prestige: 0, wins: 0, losses: 0, season: 1, division: 11,
-  teamPower: 18, development: 0, lastSeen: Date.now(), unlocked: [], buildings: { training: 1, stadium: 1, office: 1, food: 0 }, lastMatch: null,
+  teamPower: 18, development: 90, lastSeen: Date.now(), unlocked: [], buildings: { training: 1, stadium: 1, office: 1, food: 0 }, lastMatch: null,
 };
 function readSave() {
   try {
