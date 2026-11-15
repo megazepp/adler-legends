@@ -37,3 +37,11 @@
 .training-buttons{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}.training-buttons button{border:1px solid #76643f;border-radius:4px;background:#393222;color:#f2d99c;padding:8px 10px;font-size:8px;font-weight:800}.training-buttons button:disabled{opacity:.35;cursor:not-allowed}
 .evolution-track{display:flex;align-items:center;gap:7px;margin-top:16px}.evolution-track span{font-size:8px;color:#758176;white-space:nowrap}.evolution-track span.reached{color:#e8ca82;font-weight:900}.evolution-track i{height:2px;flex:1;background:#414b3f}
 @media(max-width:700px){.player-development{padding:13px}.player-profile-title h2{font-size:21px}.player-avatar{width:48px;height:48px}.attribute-grid{grid-template-columns:repeat(2,1fr);gap:10px}.training-buttons button{flex:1 1 30%;padding:9px 5px;font-size:7px}.evolution-track{gap:4px}.evolution-track span{font-size:6px}}
+
+.match-audio-panel{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 14px;margin:0 0 12px;background:linear-gradient(100deg,#202a22,#18201a);border:1px solid #ffffff18;border-radius:8px}
+.audio-label{display:flex;flex-direction:column;gap:4px;min-width:135px}.audio-label span{font-size:9px;font-weight:900;letter-spacing:1.4px;color:#e6d092}.audio-label small{font-size:7px;letter-spacing:1px;color:#9eaa9e}
+.audio-toggle,.coach-call{border:1px solid #74633e;border-radius:4px;background:#3b3324;color:#f2dda7;padding:8px 11px;font-size:8px;font-weight:900;letter-spacing:.7px}
+.audio-toggle.active{background:#254b32;border-color:#57956a;color:#d8f1dc}
+.match-audio-panel input[type=range]{flex:1;min-width:75px;accent-color:#d6b56d}
+.coach-call:disabled{opacity:.35}
+@media(max-width:700px){.match-audio-panel{gap:8px;padding:9px}.audio-label{min-width:105px}.audio-toggle,.coach-call{padding:8px;font-size:7px}.match-audio-panel input[type=range]{order:4;flex-basis:100%}}
