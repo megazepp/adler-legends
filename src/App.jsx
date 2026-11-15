@@ -78,8 +78,8 @@ function App() {
   function unlockNode(node) {
     if (game.unlocked.includes(node.id)) return;
     if (node.requires && !game.unlocked.includes(node.requires)) return setToast('Schalte zuerst die Voraussetzung frei.');
-    if (game.coins < node.cost) return setToast('Dafür fehlen noch Vereins-Coins.');
-    setGame(g => ({ ...g, coins: g.coins - node.cost, unlocked: [...g.unlocked, node.id] }));
+    if (game.development < node.cost) return setToast('Es fehlen noch Entwicklungspunkte.');
+    setGame(g => ({ ...g, development: g.development - node.cost, unlocked: [...g.unlocked, node.id] }));
     setToast(`${node.name} freigeschaltet!`);
   }
   function simulateMatch(type = 'league') {
@@ -154,7 +154,7 @@ function Development({game,onUnlock}) {
   const branches=['Spieler','Infrastruktur','Personal','Wirtschaft','Automatisierung'];
   return <div className="page"><PanelTitle tag="FORSCHUNG & FORTSCHRITT" title="Der Entwicklungsbaum" desc="Investiere in deinen Verein. Kombiniere Freischaltungen und erschaffe mächtige Synergien."/>
     <div className="tree-intro"><div><b>✦ Entwicklungspunkte</b><strong>{Math.floor(game.development).toLocaleString('de-DE')}</strong></div><p>Dein Verein sammelt kontinuierlich Erfahrung. Coins finanzieren die Freischaltungen.</p></div>
-    {branches.map(branch=><section className="branch" key={branch}><h3>{branch}</h3><div className="node-grid">{NODES.filter(n=>n.branch===branch).map(node=>{const unlocked=game.unlocked.includes(node.id);const locked=node.requires&&!game.unlocked.includes(node.requires);return <article className={`node ${unlocked?'unlocked':''} ${locked?'locked':''}`} key={node.id}><div className="node-icon">{node.icon}</div><div className="node-copy"><b>{node.name}</b><small>{node.desc}</small>{node.requires&&<em>Voraussetzung: {NODES.find(n=>n.id===node.requires)?.name}</em>}</div><button disabled={unlocked} onClick={()=>onUnlock(node)}>{unlocked?'✓ FREI':`🪙 ${node.cost}`}</button></article>})}</div></section>)}
+    {branches.map(branch=><section className="branch" key={branch}><h3>{branch}</h3><div className="node-grid">{NODES.filter(n=>n.branch===branch).map(node=>{const unlocked=game.unlocked.includes(node.id);const locked=node.requires&&!game.unlocked.includes(node.requires);return <article className={`node ${unlocked?'unlocked':''} ${locked?'locked':''}`} key={node.id}><div className="node-icon">{node.icon}</div><div className="node-copy"><b>{node.name}</b><small>{node.desc}</small>{node.requires&&<em>Voraussetzung: {NODES.find(n=>n.id===node.requires)?.name}</em>}</div><button disabled={unlocked} onClick={()=>onUnlock(node)}>{unlocked?'✓ FREI':`✦ ${node.cost}`}</button></article>})}</div></section>)}
   </div>;
 }
 function Facilities({game,kind,onUpgrade,power,venue}) {
