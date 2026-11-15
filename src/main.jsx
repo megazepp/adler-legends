@@ -9,7 +9,7 @@ createRoot(document.getElementById('root')).render(
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/adler-legends/service-worker.js').catch((error) => {
+    navigator.serviceWorker.register('/adler-legends/service-worker.js', { updateViaCache: 'none' }).then((registration) => registration.update()).catch((error) => {
       console.warn('Service Worker konnte nicht registriert werden:', error);
     });
   });
