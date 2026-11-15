@@ -1,18 +1,22 @@
 # Adler Legends 🦅
 
-Eintracht-inspirierter Incremental Auto-Battler als responsive Progressive Web App.
+**Vom untersten Amateurlevel bis zum Triple.** Adler Legends ist ein eigenständiges, inkrementelles Fußball-Aufbauspiel als responsive Progressive Web App. Kein Vereins- oder Lizenzspiel und kein klassischer Tiefenmanager: Der Fokus liegt auf passivem Fortschritt, Freischaltungen, Automatisierung, Gebäuden, Spielerentwicklung und simulierten Partien.
 
-## Features (MVP)
-- React + Vite
-- Mobile-first Oberfläche für Smartphone und Desktop
-- Mannschaftsübersicht und automatische Duelle
-- Spielertraining und Adler-Coins
-- Lokaler Spielstand mit `localStorage`
-- Einfacher zeitbasierter Offline-Fortschritt
+## Spielvision
+- Starte als kleiner Amateurverein in der untersten Liga.
+- Baue Trainingsgelände, Stadion, Geschäftsstelle und Verkaufsstellen aus.
+- Erforsche einen verzweigten Entwicklungsbaum mit Staff, Spielerboni, Synergien und Automatisierungen.
+- Lass Ressourcen kontinuierlich und offline wachsen.
+- Spiele werden simuliert; langfristiges Ziel ist das Triple aus Meisterschaft, nationalem Pokal und Champions League.
+- Die Spielwelt und Gebäude sollen sich mit dem Fortschritt sichtbar verändern.
+
+## Technik
+- React + Vite + JavaScript + CSS
+- Lokaler Spielstand via localStorage
 - PWA-Manifest und Service Worker
-- Automatisches Deployment nach GitHub Pages
+- GitHub Actions und GitHub Pages
 
-## Entwicklung
+## Lokal starten
 ```bash
 npm install
 npm run dev
@@ -23,4 +27,4 @@ npm run dev
 npm run build
 ```
 
-Die Anwendung wird unter `/adler-legends/` veröffentlicht.
+GitHub Pages Basis-Pfad: `/adler-legends/`.
