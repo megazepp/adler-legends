@@ -123,13 +123,48 @@ function MatchAudio({match,game}){
 function PlayerDevelopment({player,onTrain}){
  if(!player)return null;
  const xpPct=Math.min(100,player.xp/playerXpNext(player.level)*100);
- const fields=[['tempo','Tempo','⚡'],['schuss','Schuss','🎯'],['pass','Passspiel','🧭'],['technik','Technik','✨'],['verteidigung','Verteidigung','🛡️'],['physis','Physis','💪']];
- return <section className={'player-development rarity-panel-'+player.rarity}>
-  <div className="player-profile-head"><div className={'player-avatar rarity-avatar-'+player.rarity}>{player.pos==='TW'?'🧤':'⚽'}</div><div className="player-profile-title"><span className="kicker">SPIELERENTWICKLUNG · {rarityName(player.rarity).toUpperCase()}</span><h2>{player.name}</h2><small>{player.pos} · {player.tier} · Potenzial {player.potential}</small></div><div className="player-overall"><b>{player.rating}</b><small>GES</small></div></div>
-  <div className="level-line"><b>LEVEL {player.level}</b><span>{player.xp} / {playerXpNext(player.level)} XP</span></div><div className="xp-track"><i style={{width:xpPct+'%'}}/></div>
-  <div className="attribute-grid">{fields.map(([key,label,icon])=><div className="attribute" key={key}><div><span>{icon} {label}</span><b>{player.stats[key]}</b></div><div className="attribute-track"><i style={{width:player.stats[key]+'%'}}/></div></div>)}</div>
-  <div className="training-actions"><div><b>Gezieltes Einzeltraining</b><small>+1 Attribut · +40 XP · 14 Entwicklungspunkte</small></div><div className="training-buttons">{fields.map(([key,label])=><button key={key} disabled={player.stats[key]>=Math.min(99,player.potential)} onClick={()=>onTrain(player.id,key)}>{label} trainieren</button>)}</div></div>
-  <div className="evolution-track"><span className={player.level>=1?'reached':''}>Talent</span><i/><span className={player.level>=5?'reached':''}>Stammkraft</span><i/><span className={player.level>=10?'reached':''}>Leistungsträger</span><i/><span className={player.level>=15?'reached':''}>Legende</span></div>
+ const fields=[['tempo','Tempo','PAC'],['schuss','Schuss','SHO'],['pass','Passspiel','PAS'],['technik','Technik','DRI'],['verteidigung','Verteidigung','DEF'],['physis','Physis','PHY']];
+ return <section className="upgrade-screen">
+  <div className="upgrade-backdrop"><div className="upgrade-light"/></div>
+  <div className="upgrade-topline"><span>‹　SPIELER-UPGRADES</span><div><b>◉ {Math.floor(player.rating*1.4)}</b><b>▣ {player.level*590+11800}</b></div></div>
+  <div className="upgrade-layout">
+   <div className="upgrade-player-art">
+    <div className="player-stage-label">FIRST TEAM　/　{player.pos}</div>
+    <svg className="footballer-render" viewBox="0 0 260 500" role="img" aria-label="Stilisierte Spielerfigur im Vereinsdress">
+     <defs><linearGradient id="kit" x1="0" x2="1" y1="0" y2="1"><stop stopColor="#6b43ff"/><stop offset=".48" stopColor="#3521a0"/><stop offset="1" stopColor="#171b55"/></linearGradient><linearGradient id="skin" x1="0" x2="1"><stop stopColor="#e0a77e"/><stop offset="1" stopColor="#9d6248"/></linearGradient><linearGradient id="boot" x1="0" x2="1"><stop stopColor="#d8f45a"/><stop offset="1" stopColor="#718d24"/></linearGradient></defs>
+     <ellipse cx="132" cy="482" rx="92" ry="12" fill="#050817" opacity=".65"/>
+     <path d="M94 82 Q76 84 67 108 L42 190 Q39 205 52 211 L76 217 91 169 91 256 169 256 169 169 186 216 211 205 194 119 Q189 89 162 82 L145 74 113 74Z" fill="url(#kit)" stroke="#b7a6ff" strokeWidth="3"/>
+     <path d="M104 80 Q130 103 154 80 L145 70 112 70Z" fill="#e7d9ff"/><path d="M127 100 L127 248" stroke="#9e8bff" strokeWidth="4" opacity=".6"/>
+     <path d="M95 250 L164 250 171 350 158 430 126 430 119 341 111 430 78 430 84 344Z" fill="#222d70" stroke="#7c79cb" strokeWidth="3"/>
+     <path d="M80 420 L116 420 112 466 99 480 57 480 Q50 473 63 462 L82 449Z" fill="#d8e1ed"/><path d="M127 420 L160 420 181 462 205 472 Q215 484 202 486 L153 482 137 467Z" fill="#d8e1ed"/>
+     <path d="M58 477 L101 477 108 488 49 488 Q40 485 48 480Z" fill="url(#boot)"/><path d="M154 480 L205 480 217 489 161 489Z" fill="url(#boot)"/>
+     <path d="M97 77 Q86 49 102 30 Q119 10 146 23 Q165 37 154 70 L145 91 112 93Z" fill="url(#skin)" stroke="#583d3a" strokeWidth="2"/>
+     <path d="M98 48 Q92 13 126 12 Q158 10 162 42 L152 36 144 28 119 36 106 55Z" fill="#171a26"/>
+     <path d="M106 57 Q118 64 131 58" stroke="#53332f" strokeWidth="2" fill="none"/><path d="M115 46 L121 46 M139 45 L145 45" stroke="#241e26" strokeWidth="3"/>
+     <path d="M48 194 L31 263 40 269 58 215 M204 198 L222 260 213 269 190 216" stroke="url(#skin)" strokeWidth="18" strokeLinecap="round"/>
+     <path d="M52 111 L72 119 M187 115 L169 123" stroke="#f0e8ff" strokeWidth="6"/>
+     <path d="M126 117 L145 117 145 140 126 140Z" fill="#e8dcff"/><text x="135" y="134" textAnchor="middle" fontSize="14" fontWeight="900" fill="#302080">9</text>
+    </svg>
+    <div className="player-art-caption"><b>{player.name.toUpperCase()}</b><span>{player.pos}　·　{player.tier.toUpperCase()}</span></div>
+   </div>
+   <div className="upgrade-profile">
+    <div className="player-card-visual"><div className="card-shine"/><div className="card-top"><b>{player.rating}</b><span>{player.pos}</span></div><div className="card-player-mark">✦</div><div className="card-bottom"><b>{player.name.split(' ').slice(-1)[0].toUpperCase()}</b><span>ADLER LEGENDS　★</span></div></div>
+    <div className="profile-identity"><div><h2>{player.name}</h2><span>{player.pos}　/　ALTER {20+player.level%12}　/　{175+player.level%13} CM</span></div><b className="ovr-number">{player.rating}<small>OVR</small></b></div>
+    <div className="profile-meta"><span>🇩🇪　ADLER LEGENDS</span><span>LEVEL {player.level}</span><span>POTENZIAL {player.potential}</span></div>
+    <div className="mini-formation"><div className="mini-pitch"><i/><i/><i/><i/><i/></div><span>4 – 3 – 3　·　STARTELF</span></div>
+    <div className="upgrade-stats">{fields.map(([key,label,abbr])=><div className="upgrade-stat" key={key}><span>{abbr}</span><b>{player.stats[key]}</b><i><em style={{width:player.stats[key]+'%'}}/></i><small>{label}</small></div>)}</div>
+    <button className="details-link" onClick={()=>{}}>DETAILS ERWEITERN　⌄</button>
+   </div>
+   <aside className="upgrade-console">
+    <div className="upgrade-tabs"><b>LEVEL-UP</b><span>ENHANCE</span></div>
+    <div className="upgrade-level"><span>LV.</span><b>{player.level}</b></div>
+    <div className="upgrade-xp"><div><i style={{width:xpPct+'%'}}/></div><span>{player.xp} / {playerXpNext(player.level)} XP</span></div>
+    <div className="upgrade-preview"><b>LEVEL-UP PREVIEW <span>›</span></b><small>Upgrade auf Level {player.level+1}</small>{[['OVR',player.rating,Math.min(99,player.rating+(player.level%2===0?1:0))],['Physical Contact',player.stats.physis,Math.min(99,player.stats.physis+1)],['Sprint Speed',player.stats.tempo,Math.min(99,player.stats.tempo+1)],['Ball Control',player.stats.technik,Math.min(99,player.stats.technik+1)],['Passing',player.stats.pass,Math.min(99,player.stats.pass+1)]].map(([label,a,b])=><div key={label}><span>{label}</span><b>{a} <i>›</i> {b}</b></div>)}</div>
+    <div className="upgrade-items"><b>TRAININGS-BOOSTER</b>{['✚','✦','✚','♛'].map((x,i)=><div className={'booster booster-'+i} key={i}><span>{x}</span><small>x{player.level>i*4?1:0}</small></div>)}</div>
+    <div className="upgrade-cost"><span>⚡ 14 ENTWICKLUNGSPUNKTE</span><b>{player.xp} XP</b></div>
+    <div className="training-buttons upgrade-training">{fields.map(([key,label])=><button key={key} disabled={player.stats[key]>=Math.min(99,player.potential)} onClick={()=>onTrain(player.id,key)}>{label} +1</button>)}</div>
+   </aside>
+  </div>
  </section>;
 }
 function MatchArena({match,game}){
