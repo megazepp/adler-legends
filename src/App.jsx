@@ -132,7 +132,7 @@ function MatchAudio({match,game}){
  const coach=()=>{if(!enabled)return;const lines=leagueLevel>7?['Weiter, weiter!','Raus auf den Ball!','Zusammen bleiben!']:leagueLevel>3?['Verschieben!','Druck machen!','Hintermann sichern!']:['Auf gehts!','Spiel den Pass!','Bleib dran!'];if(window.speechSynthesis){const u=new SpeechSynthesisUtterance(lines[Math.floor(Math.random()*lines.length)]);u.lang='de-DE';u.rate=1.08;u.volume=volume/100;window.speechSynthesis.speak(u);}};
  return <div className="match-audio-panel"><div className="audio-label"><span>🔊 MATCH-SOUND</span><small>{leagueLevel>7?'KREISKLASSE-SPORTPLATZ':leagueLevel>3?'LIGA-STADION':'GROSSE STADIONKULISSE'}</small></div><button className={enabled?'audio-toggle active':'audio-toggle'} onClick={()=>{setEnabled(v=>!v);if(!enabled&&audioRef.current?.state==='suspended')audioRef.current.resume();}}>{enabled?'SOUND AN':'SOUND AUS'}</button><input aria-label="Match-Lautstärke" type="range" min="0" max="100" value={volume} onChange={e=>setVolume(Number(e.target.value))}/><button className="coach-call" onClick={coach} disabled={!enabled}>📣 Trainer-Ruf</button></div>;
 }
-\nfunction PlayerDevelopment({player,onTrain}){
+function PlayerDevelopment({player,onTrain}){
  if(!player)return null;
  const xpPct=Math.min(100,player.xp/playerXpNext(player.level)*100);
  const fields=[['tempo','Tempo','⚡'],['schuss','Schuss','🎯'],['pass','Passspiel','🧭'],['technik','Technik','✨'],['verteidigung','Verteidigung','🛡️'],['physis','Physis','💪']];
