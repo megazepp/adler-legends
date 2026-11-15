@@ -18,7 +18,7 @@ const NODES = [
   {id:'academy',branch:'Infrastruktur',name:'Jugendakademie',desc:'+2 Teamstärke je Saison',cost:500,icon:'🎓'},
   {id:'canteen',branch:'Wirtschaft',name:'Vereinskantine',desc:'+4 Coins / Sekunde',cost:150,icon:'🍲'},
   {id:'shop',branch:'Wirtschaft',name:'Fanshop',desc:'+9 Coins / Sekunde',cost:430,icon:'🛍️',requires:'canteen'},
-  {id:'automation',branch:'Personal',name:'Geschäftsstellen-Team',desc'+50 % Einnahmen',cost:900,icon:'⚙️',requires:'shop'}
+  {id:'automation',branch:'Personal',name:'Geschäftsstellen-Team',desc:'+50 % Einnahmen',cost:900,icon:'⚙️',requires:'shop'}
 ];
 const BUILDINGS = [
   {id:'training',name:'Trainingszentrum',icon:'⚽',base:90,desc:'Steigert die Stärke deiner Mannschaft.'},
@@ -40,7 +40,7 @@ function makeMatch(g){
  const events=[];let a=0,b=0;
  for(let minute=5;minute<=90;minute+=5){
   const chance=Math.random();
-  if(chance<(own>rival?.16:.11)){a++;events.push({minute,text:(Math.random()>.5?'⚽ Tor für ':'⚽ ')+g.shortName+'! '+(g.squad[Math.floor(Math.random()*g.squad.length)].name),side:'home'});}
+  if(chance < (own > rival ? .16 : .11)){a++;events.push({minute,text:(Math.random()>.5?'⚽ Tor für ':'⚽ ')+g.shortName+'! '+(g.squad[Math.floor(Math.random()*g.squad.length)].name),side:'home'});}
   else if(chance>.87){b++;events.push({minute,text:'⚽ Tor für '+opponent,side:'away'});}
   else if(chance>.75)events.push({minute,text:['🟨 Gelbe Karte','🥅 Großchance vergeben','🧤 Starke Parade'][Math.floor(Math.random()*3)],side:'neutral'});
  }
