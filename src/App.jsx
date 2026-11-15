@@ -53,7 +53,7 @@ function makeMatch(g){
  return {opponent,home,own,rival,minute:0,homeScore:0,awayScore:0,events,feed:[],status:'live',reward:0,points:0,activeBoost:null,boostUntil:0,pickupAt:12};
 }
 function App(){
- const [game,setGame]=useState(readGame);const [screen,setScreen]=useState('home');const [selectedPlayerId,setSelectedPlayerId]=useState(9);const [toast,setToast]=useState('');const [match,setMatch]=useState(null);const [clubDraft,setClubDraft]=useState({name:'FC Adler',short:'FCA',colors:'red'});
+ const [game,setGame]=useState(readGame);const [screen,setScreen]=useState('squad');const [selectedPlayerId,setSelectedPlayerId]=useState(9);const [toast,setToast]=useState('');const [match,setMatch]=useState(null);const [clubDraft,setClubDraft]=useState({name:'FC Adler',short:'FCA',colors:'red'});
  const income=useMemo(()=>game?incomeRate(game):0,[game]);const power=game?strength(game):0;
  useEffect(()=>{if(!game)return;const t=setInterval(()=>setGame(g=>g?({...g,coins:g.coins+incomeRate(g),development:g.development+devRate(g),lastSeen:Date.now()}):g),1000);return()=>clearInterval(t);},[!!game]);
  useEffect(()=>{if(game)localStorage.setItem(SAVE_KEY,JSON.stringify({...game,lastSeen:Date.now()}));},[game]);
