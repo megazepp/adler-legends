@@ -17,6 +17,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,8 +26,10 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
-        run: npm install
+        timeout-minutes: 5
+        run: npm install --no-audit --no-fund --prefer-online
       - name: Build
+        timeout-minutes: 3
         run: npm run build
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -34,6 +37,7 @@ jobs:
           path: dist
 
   deploy:
+    timeout-minutes: 5
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
