@@ -118,3 +118,57 @@
  .powerup-heading{display:block}.powerup-heading small{display:block;margin-top:4px}
  .match-audio-panel{gap:7px}.music-upload{font-size:7px;padding:8px}.match-audio-panel select{max-width:110px}
 }
+
+
+/* Premium football-game upgrade screen inspired by collectible player games */
+.upgrade-screen{position:relative;isolation:isolate;overflow:hidden;min-height:690px;margin:0 0 28px;padding:20px 22px 24px;border:1px solid #8b8cc65c;border-radius:14px;background:linear-gradient(112deg,#11152c 0%,#171b39 48%,#11152d 100%);box-shadow:0 22px 65px #0009,inset 0 1px #ffffff18}
+.upgrade-backdrop{position:absolute;inset:0;z-index:-1;overflow:hidden;background:radial-gradient(ellipse at 12% 48%,#54458b70,transparent 32%),radial-gradient(ellipse at 72% 8%,#4b2b9b48,transparent 35%),linear-gradient(135deg,#13172e,#1d2040 55%,#10152a)}
+.upgrade-backdrop:before{content:"";position:absolute;inset:0;opacity:.18;background:repeating-linear-gradient(135deg,transparent 0 55px,#aeb9ff 56px 58px,transparent 59px 120px)}
+.upgrade-light{position:absolute;width:480px;height:480px;left:-180px;top:80px;background:#a24bff33;filter:blur(75px);border-radius:50%}
+.upgrade-topline{height:40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #b9c1ff30;color:#f4f1ff;font:900 15px 'Barlow Condensed';letter-spacing:1.5px}
+.upgrade-topline>div{display:flex;gap:18px;color:#f3df9a}.upgrade-topline b{font:800 14px Rajdhani}
+.upgrade-layout{display:grid;grid-template-columns:minmax(190px,.78fr) minmax(270px,1.1fr) minmax(270px,.95fr);gap:18px;min-height:610px;padding-top:18px}
+.upgrade-player-art{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:560px;overflow:hidden;border-radius:9px;background:linear-gradient(180deg,#22274755,#11172a88 78%),radial-gradient(ellipse at 48% 48%,#7776b34a,transparent 58%)}
+.upgrade-player-art:before{content:"";position:absolute;inset:18% -15% 0;background:linear-gradient(180deg,transparent,#080d20cc);clip-path:polygon(0 20%,100% 0,100% 100%,0 100%)}
+.upgrade-player-art:after{content:"";position:absolute;left:-10%;right:-10%;bottom:0;height:28%;background:repeating-linear-gradient(90deg,#172b3a 0 35px,#20364a 36px 70px);transform:perspective(180px) rotateX(14deg);opacity:.55}
+.player-stage-label{position:absolute;top:13px;left:14px;color:#c3c9e8;font:800 9px 'Barlow Condensed';letter-spacing:2px}
+.footballer-render{position:relative;z-index:1;width:100%;height:470px;filter:drop-shadow(0 14px 18px #000b);margin:auto auto -2px}
+.player-art-caption{position:relative;z-index:2;display:flex;flex-direction:column;padding:12px 14px;background:linear-gradient(90deg,#151a31ee,#151a3100);border-top:1px solid #ffffff25}
+.player-art-caption b{font:900 20px 'Barlow Condensed';letter-spacing:1px;color:#fff}.player-art-caption span{font-size:9px;color:#aeb7d7;letter-spacing:1.5px}
+.upgrade-profile{position:relative;min-width:0;padding:5px 2px 0;color:#f5f4ff}
+.player-card-visual{position:relative;float:left;width:116px;height:154px;margin:0 16px 12px 0;padding:11px;border:2px solid #b5a1ff;border-radius:12px;overflow:hidden;background:linear-gradient(145deg,#6c52bd,#26255e 48%,#10172d);box-shadow:0 0 0 3px #4a37a955,0 12px 30px #0008,inset 0 0 22px #ffffff25;clip-path:polygon(0 0,100% 0,100% 86%,50% 100%,0 86%)}
+.player-card-visual:before{content:"";position:absolute;inset:0;background:linear-gradient(130deg,#ffffff38,transparent 32%,transparent 70%,#5ee8e055);pointer-events:none}
+.card-shine{position:absolute;inset:-30% 35% -20% -50%;transform:rotate(28deg);background:linear-gradient(90deg,transparent,#ffffff2a,transparent)}
+.card-top{position:relative;z-index:1;display:flex;align-items:baseline;justify-content:space-between}.card-top b{font:900 31px 'Barlow Condensed';color:#fff;text-shadow:0 2px 6px #000}.card-top span{font:900 12px 'Barlow Condensed'}
+.card-player-mark{position:absolute;left:0;right:0;top:38px;text-align:center;font-size:64px;color:#d8d3ff;text-shadow:0 5px 10px #0008;opacity:.8}
+.card-bottom{position:absolute;z-index:1;bottom:17px;left:9px;right:9px;display:flex;flex-direction:column;text-align:center}.card-bottom b{font:900 14px 'Barlow Condensed';letter-spacing:1px}.card-bottom span{font-size:6px;letter-spacing:1px;color:#e1d8ff}
+.profile-identity{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:10px 0 6px}
+.profile-identity h2{margin:0 0 8px;font:900 clamp(20px,2.3vw,29px) 'Barlow Condensed';letter-spacing:.4px}.profile-identity span{font-size:9px;color:#c4c8e1;letter-spacing:.6px}
+.ovr-number{font:900 30px 'Barlow Condensed';color:#f6df9a;text-align:center}.ovr-number small{display:block;font:800 8px Inter;letter-spacing:1px;color:#b7c0dc}
+.profile-meta{clear:both;display:flex;flex-wrap:wrap;gap:7px;padding:10px 0;border-top:1px solid #ffffff24;border-bottom:1px solid #ffffff24}
+.profile-meta span{padding:5px 7px;background:#ffffff10;border:1px solid #ffffff20;border-radius:3px;color:#cbd0e8;font-size:8px;font-weight:800}
+.mini-formation{display:flex;align-items:center;gap:12px;padding:12px 0;color:#c7cce4;font-size:8px;font-weight:900;letter-spacing:1px}
+.mini-pitch{position:relative;width:55px;height:72px;border:1px solid #b7c5e5aa;background:linear-gradient(180deg,#263c4a,#1d3540);border-radius:2px}
+.mini-pitch:before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid #b7c5e577}.mini-pitch:after{content:"";position:absolute;width:17px;height:9px;left:18px;top:0;border:1px solid #b7c5e577;border-top:0}
+.mini-pitch i{position:absolute;width:9px;height:9px;border-radius:2px;background:#51df83;box-shadow:0 0 8px #51df83aa}.mini-pitch i:nth-child(1){left:5px;bottom:9px}.mini-pitch i:nth-child(2){left:23px;bottom:22px}.mini-pitch i:nth-child(3){right:5px;bottom:9px}.mini-pitch i:nth-child(4){left:23px;top:20px;background:#9c79ff}.mini-pitch i:nth-child(5){left:23px;top:4px;background:#f1d36d}
+.upgrade-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px;clear:both}
+.upgrade-stat{position:relative;display:grid;grid-template-columns:34px 28px 1fr;align-items:center;gap:7px;padding:7px 8px;background:linear-gradient(90deg,#6c789c77,#45527488);border:1px solid #b4c1e32b;border-radius:2px}
+.upgrade-stat>span{font:900 10px 'Barlow Condensed';color:#e5e9fa}.upgrade-stat>b{font:900 16px Rajdhani;color:#fff}.upgrade-stat>i{height:4px;background:#151b31;border-radius:5px;overflow:hidden}.upgrade-stat>i em{display:block;height:100%;background:linear-gradient(90deg,#28ce7d,#a3ef80)}
+.upgrade-stat small{grid-column:1/-1;color:#b9c2df;font-size:8px}
+.details-link{display:block;margin:12px auto 0;border:0;background:transparent;color:#c8c9ed;text-decoration:underline;font-size:9px}
+.upgrade-console{min-width:0;padding:0 0 14px 16px;border-left:1px solid #a8b4e044;color:#f5f5ff}
+.upgrade-tabs{display:grid;grid-template-columns:1fr 1fr;height:42px;background:#e9eaf2;color:#272b40;font-size:11px;font-weight:900;text-align:center;align-items:center}
+.upgrade-tabs b{height:100%;display:grid;place-items:center;background:linear-gradient(100deg,#7625f4,#a326ff);color:#fff;box-shadow:inset 0 -3px #d9b5ff}
+.upgrade-level{text-align:center;padding:14px 0 8px;color:#e8e9ff;font:800 22px 'Barlow Condensed'}.upgrade-level span{font-size:14px;color:#aeb6d4;margin-right:5px}.upgrade-level b{font-size:28px}
+.upgrade-xp>div{height:13px;background:#424c6c;border:1px solid #7783a7;overflow:hidden}.upgrade-xp>div i{display:block;height:100%;background:linear-gradient(90deg,#16b95f,#6be58a);box-shadow:0 0 10px #27e27866}.upgrade-xp>span{display:block;text-align:center;margin-top:5px;color:#c7cce4;font-size:9px}
+.upgrade-preview{margin-top:20px}.upgrade-preview>b{display:flex;justify-content:space-between;color:#8cf0a5;font:900 10px 'Barlow Condensed';letter-spacing:1px}.upgrade-preview>b span{font-size:17px}
+.upgrade-preview>small{display:block;margin:7px 0 12px;color:#aeb7d4;font-size:9px}
+.upgrade-preview>div{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid #ffffff18;font-size:10px;color:#e1e4f5}.upgrade-preview>div b{white-space:nowrap;font:800 12px Rajdhani;color:#fff}.upgrade-preview>div b i{font-style:normal;color:#72e99a;padding:0 4px}
+.upgrade-items{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:18px}.upgrade-items>b{grid-column:1/-1;font:900 10px 'Barlow Condensed';letter-spacing:1px;color:#cbd2f0}
+.booster{height:75px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:linear-gradient(145deg,#203b72,#101c42);border:1px solid #6f94ef;border-radius:4px;box-shadow:inset 0 0 18px #559aff22}.booster span{font-size:25px;color:#b7e4ff;text-shadow:0 0 9px #48a7ff}.booster small{width:100%;padding:3px;background:#ffffff24;text-align:center;color:#cbd6f5;font-size:8px}
+.booster-1{background:linear-gradient(145deg,#85702b,#3c3215);border-color:#e8d06b}.booster-1 span{color:#fff0a5}.booster-2{background:linear-gradient(145deg,#85265f,#401332);border-color:#f06cae}.booster-2 span{color:#ffb0e0}.booster-3{background:linear-gradient(145deg,#334b5d,#172331);border-color:#a5c4da}.booster-3 span{color:#e0f4ff}
+.upgrade-cost{display:flex;justify-content:space-between;gap:8px;margin-top:18px;padding:10px;background:#28375d;border:1px solid #9eaddd55;color:#dbe4ff;font-size:9px}.upgrade-cost b{color:#f5dc8f}
+.upgrade-training{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:9px}.upgrade-training button{min-width:0;background:linear-gradient(110deg,#6326bc,#36206d);border:1px solid #9e7be8;color:#fff;font-size:8px;padding:9px 5px;border-radius:3px}.upgrade-training button:disabled{opacity:.3}
+@media(max-width:1050px){.upgrade-layout{grid-template-columns:minmax(155px,.7fr) minmax(230px,1fr) minmax(230px,.95fr);gap:12px}.upgrade-console{padding-left:12px}.footballer-render{height:420px}.upgrade-screen{padding:16px}}
+@media(max-width:760px){.upgrade-screen{padding:12px;margin:0 -5px 18px;border-radius:8px}.upgrade-layout{grid-template-columns:1fr 1fr;gap:12px}.upgrade-player-art{grid-column:1;grid-row:1;min-height:340px}.footballer-render{height:300px}.upgrade-profile{grid-column:2;grid-row:1}.player-card-visual{width:86px;height:118px;margin-right:9px}.card-player-mark{font-size:47px}.profile-identity{display:block}.profile-identity h2{font-size:20px}.ovr-number{font-size:23px}.profile-meta{gap:4px}.profile-meta span{font-size:7px}.upgrade-stat{grid-template-columns:25px 22px 1fr;gap:4px;padding:5px}.upgrade-stat small{font-size:7px}.upgrade-console{grid-column:1/-1;grid-row:2;border-left:0;border-top:1px solid #a8b4e044;padding:14px 0 0}.upgrade-preview{margin-top:13px}.upgrade-items{margin-top:12px}.booster{height:64px}}
+@media(max-width:460px){.upgrade-layout{grid-template-columns:1fr}.upgrade-player-art{grid-column:1;grid-row:1;min-height:290px;max-height:310px}.footballer-render{height:270px;width:70%}.upgrade-profile{grid-column:1;grid-row:2}.upgrade-console{grid-column:1;grid-row:3}.player-card-visual{width:100px;height:136px}.profile-identity{display:flex}.upgrade-stat{grid-template-columns:34px 28px 1fr;padding:7px}.upgrade-stat small{font-size:8px}.upgrade-topline{font-size:12px}.upgrade-topline>div{gap:8px}.upgrade-preview>div{font-size:11px}}
