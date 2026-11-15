@@ -144,7 +144,7 @@ function PlayerDevelopment({player,onTrain}){
   <div className="evolution-track"><span className={player.level>=1?'reached':''}>Talent</span><i/><span className={player.level>=5?'reached':''}>Stammkraft</span><i/><span className={player.level>=10?'reached':''}>Leistungsträger</span><i/><span className={player.level>=15?'reached':''}>Legende</span></div>
  </section>;
 }
-\nfunction MatchArena({match,game}){
+function MatchArena({match,game}){
  const minute=match?.minute||0;
  const home=[[50,88],[17,73],[37,76],[63,76],[83,73],[30,53],[50,60],[70,53],[22,29],[50,22],[78,29]];
  const away=[[50,12],[17,27],[37,24],[63,24],[83,27],[30,47],[50,40],[70,47],[22,71],[50,78],[78,71]];
