@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 const SAVE_KEY = 'adler-legends-game-v3';
 const OPPONENTS = [
