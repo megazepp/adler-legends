@@ -1,4 +1,4 @@
-const CACHE_NAME = 'adler-legends-v4';
+const CACHE_NAME = 'adler-legends-v5';
 const APP_SHELL = ['/adler-legends/', '/adler-legends/manifest.webmanifest', '/adler-legends/icons/adler.svg'];
 
 self.addEventListener('install', (event) => {
