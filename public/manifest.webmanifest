@@ -1,0 +1,20 @@
+{
+  "name": "Adler Legends",
+  "short_name": "Adler Legends",
+  "description": "Dein Eintracht-inspirierter Incremental Auto-Battler.",
+  "lang": "de",
+  "start_url": "/adler-legends/",
+  "scope": "/adler-legends/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#101014",
+  "theme_color": "#a71930",
+  "icons": [
+    {
+      "src": "/adler-legends/icons/adler.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
