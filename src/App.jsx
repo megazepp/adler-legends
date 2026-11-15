@@ -1,174 +1,92 @@
 import { useEffect, useMemo, useState } from 'react';
 
-const SAVE_KEY = 'adler-legends-incremental-v2';
+const SAVE_KEY = 'adler-legends-game-v3';
+const OPPONENTS = [
+  ['SV Falkenheim', 16], ['FC Stahlbrück', 18], ['TSV Moosbach', 14], ['Viktoria Nordtal', 20],
+  ['Rot-Weiß Eichen', 17], ['Dynamo Höhenfeld', 19], ['SC Nebelwald', 15], ['Union Kiesfurt', 21],
+  ['Blau-Gold Linden', 13], ['TuS Morgenrot', 18], ['Germania Steinau', 16], ['Eintracht Silbersee', 20],
+  ['Borussia Tannen', 15], ['SpVgg Adlerhorst', 22], ['FC Küstenwind', 17], ['SV Abendhain', 19],
+  ['Olympia Brücken', 14], ['VfB Sonnental', 21]
+];
+const FIRST_NAMES = ['Milan','Jonas','Elias','Noah','Finn','Luca','Ben','Timo','Levin','Mats','Nico','Oskar','David','Emil','Paul','Jannis','Theo','Fabian'];
+const LAST_NAMES = ['Hartwig','Keller','Brandt','Seidel','Vogel','Krüger','Falk','Neumann','Berger','Winter','Kunz','Albrecht','Sommer','Reuter','Jäger','Wolff'];
+const POSITIONS = ['TW','RV','IV','IV','LV','ZM','ZM','OM','RA','ST','LA'];
 const NODES = [
-  { id: 'fitness', branch: 'Spieler', name: 'Athletik-Grundlagen', desc: '+15 % Teamstärke', cost: 120, icon: '🏃', effect: 'power' },
-  { id: 'coach', branch: 'Spieler', name: 'Erster Co-Trainer', desc: 'Training produziert Entwicklungspunkte', cost: 260, icon: '🧑‍🏫', effect: 'training' },
-  { id: 'synergy', branch: 'Spieler', name: 'Adler-DNA', desc: 'Spieler-Synergie: +35 % Teamstärke', cost: 850, icon: '🧬', effect: 'synergy', requires: 'fitness' },
-  { id: 'grounds', branch: 'Infrastruktur', name: 'Zweiter Trainingsplatz', desc: '+3 Entwicklungspunkte / Sek.', cost: 180, icon: '🌱', effect: 'training' },
-  { id: 'academy', branch: 'Infrastruktur', name: 'Nachwuchsakademie', desc: '+2 Teamstärke / Saison', cost: 520, icon: '🎓', effect: 'power', requires: 'grounds' },
-  { id: 'canteen', branch: 'Wirtschaft', name: 'Vereinskantine', desc: '+4 Coins / Sek.', cost: 150, icon: '🍲', effect: 'income' },
-  { id: 'shop', branch: 'Wirtschaft', name: 'Fanshop', desc: '+9 Coins / Sek.', cost: 430, icon: '🛍️', effect: 'income', requires: 'canteen' },
-  { id: 'automation', branch: 'Automatisierung', name: 'Geschäftsstellen-Team', desc: 'Alle Einnahmen +50 %', cost: 1100, icon: '⚙️', effect: 'multiplier', requires: 'shop' },
-  { id: 'chef', branch: 'Personal', name: 'Vereinskoch', desc: 'Kantine arbeitet automatisch: +8 Coins / Sek.', cost: 700, icon: '👨‍🍳', effect: 'income', requires: 'canteen' },
-  { id: 'analyst', branch: 'Personal', name: 'Datenanalyst', desc: 'Spielsimulationen: +20 % Belohnung', cost: 950, icon: '📊', effect: 'reward', requires: 'coach' },
+  {id:'fitness',branch:'Team',name:'Athletiktraining',desc:'+8 Teamstärke',cost:120,icon:'⚡'},
+  {id:'coach',branch:'Team',name:'Co-Trainer',desc:'Mehr Entwicklungspunkte',cost:260,icon:'🎽'},
+  {id:'synergy',branch:'Team',name:'Adler-DNA',desc:'+20 % Teamchemie',cost:650,icon:'🦅',requires:'fitness'},
+  {id:'academy',branch:'Infrastruktur',name:'Jugendakademie',desc:'+2 Teamstärke je Saison',cost:500,icon:'🎓'},
+  {id:'canteen',branch:'Wirtschaft',name:'Vereinskantine',desc:'+4 Coins / Sekunde',cost:150,icon:'🍲'},
+  {id:'shop',branch:'Wirtschaft',name:'Fanshop',desc:'+9 Coins / Sekunde',cost:430,icon:'🛍️',requires:'canteen'},
+  {id:'automation',branch:'Personal',name:'Geschäftsstellen-Team',desc'+50 % Einnahmen',cost:900,icon:'⚙️',requires:'shop'}
 ];
 const BUILDINGS = [
-  { id: 'training', name: 'Trainingsgelände', icon: '🌱', base: 90, gain: 'Entwicklung', description: 'Bessere Plätze und moderne Trainingsgeräte.' },
-  { id: 'stadium', name: 'Stadion', icon: '🏟️', base: 150, gain: 'Fans & Prestige', description: 'Mehr Plätze, Tribünen und Flutlicht.' },
-  { id: 'office', name: 'Geschäftsstelle', icon: '🏢', base: 130, gain: 'Automatisierung', description: 'Personal und Vereinsabläufe.' },
-  { id: 'food', name: 'Verkaufsstellen', icon: '🍔', base: 110, gain: 'Coins / Sek.', description: 'Kioske, Fanshop und Gastronomie.' },
+  {id:'training',name:'Trainingszentrum',icon:'⚽',base:90,desc:'Steigert die Stärke deiner Mannschaft.'},
+  {id:'stadium',name:'Stadion',icon:'🏟️',base:150,desc:'Mehr Fans, bessere Atmosphäre und Einnahmen.'},
+  {id:'food',name:'Fanshop & Gastronomie',icon:'🥤',base:110,desc:'Verdient automatisch Vereins-Coins.'}
 ];
-const INITIAL = {
-  coins: 180, fans: 42, prestige: 0, wins: 0, losses: 0, season: 1, division: 11,
-  teamPower: 18, development: 90, lastSeen: Date.now(), unlocked: [], buildings: { training: 1, stadium: 1, office: 1, food: 0 }, lastMatch: null,
-};
-function readSave() {
-  try {
-    const data = JSON.parse(localStorage.getItem(SAVE_KEY));
-    if (!data) return INITIAL;
-    const elapsed = Math.min(8 * 3600, Math.max(0, (Date.now() - data.lastSeen) / 1000));
-    const income = incomePerSecond(data);
-    return { ...INITIAL, ...data, coins: data.coins + Math.floor(elapsed * income), development: (data.development || 0) + Math.floor(elapsed * trainingPerSecond(data)), offlineGain: Math.floor(elapsed * income) };
-  } catch { return INITIAL; }
+function makeSquad(){return FIRST_NAMES.slice(0,11).map((n,i)=>({id:i,name:n+' '+LAST_NAMES[(i*3+2)%LAST_NAMES.length],pos:POSITIONS[i],rating:54+((i*7)%13)}));}
+function freshGame(clubName,shortName,colors){
+ return {created:true,clubName,shortName,colors,coins:260,fans:38,prestige:0,wins:0,draws:0,losses:0,season:1,division:11,teamPower:18,development:100,unlocked:[],buildings:{training:1,stadium:1,food:0},squad:makeSquad(),matchday:1,lastSeen:Date.now(),lastMatch:null};
 }
-function incomePerSecond(g) {
-  const b = g.buildings || INITIAL.buildings;
-  let value = 1 + b.food * 2 + (g.unlocked?.includes('canteen') ? 4 : 0) + (g.unlocked?.includes('shop') ? 9 : 0) + (g.unlocked?.includes('chef') ? 8 : 0);
-  if (g.unlocked?.includes('automation')) value *= 1.5;
-  return value;
+function readGame(){try{const x=JSON.parse(localStorage.getItem(SAVE_KEY));if(!x?.created)return null;const elapsed=Math.min(28800,Math.max(0,(Date.now()-x.lastSeen)/1000));return {...x,coins:(x.coins||0)+Math.floor(elapsed*incomeRate(x)),development:(x.development||0)+Math.floor(elapsed*devRate(x)),offlineGain:Math.floor(elapsed*incomeRate(x))};}catch{return null;}}
+function incomeRate(g){return 1+(g.buildings?.food||0)*2+(g.unlocked?.includes('canteen')?4:0)+(g.unlocked?.includes('shop')?9:0)+(g.unlocked?.includes('automation')?5:0);}
+function devRate(g){return .35+(g.buildings?.training||1)*.35+(g.unlocked?.includes('coach')?1:0);}
+function strength(g){return Math.round((g.teamPower+(g.buildings?.training||1)*2+(g.unlocked?.includes('fitness')?8:0)+(g.unlocked?.includes('academy')?g.season*2:0))*(g.unlocked?.includes('synergy')?1.2:1));}
+function leagueName(d){return d>=11?'Kreisklasse':d===10?'Kreisliga':d===9?'Bezirksliga':d===8?'Landesliga':d===7?'Verbandsliga':d===6?'Oberliga':d===5?'Regionalliga':d===4?'3. Liga':d===3?'2. Bundesliga':d===2?'Bundesliga':'Champions League';}
+function opponentFor(g){return OPPONENTS[(g.matchday-1)%OPPONENTS.length];}
+function makeMatch(g){
+ const [opponent,base]=opponentFor(g);const home=g.matchday%2===1;const own=strength(g)+(home?3:0);const rival=base+Math.max(0,11-g.division)*3+Math.floor(Math.random()*9);
+ const events=[];let a=0,b=0;
+ for(let minute=5;minute<=90;minute+=5){
+  const chance=Math.random();
+  if(chance<(own>rival?.16:.11)){a++;events.push({minute,text:(Math.random()>.5?'⚽ Tor für ':'⚽ ')+g.shortName+'! '+(g.squad[Math.floor(Math.random()*g.squad.length)].name),side:'home'});}
+  else if(chance>.87){b++;events.push({minute,text:'⚽ Tor für '+opponent,side:'away'});}
+  else if(chance>.75)events.push({minute,text:['🟨 Gelbe Karte','🥅 Großchance vergeben','🧤 Starke Parade'][Math.floor(Math.random()*3)],side:'neutral'});
+ }
+ return {opponent,home,own,rival,minute:0,homeScore:0,awayScore:0,events,feed:[],status:'live',reward:0};
 }
-function trainingPerSecond(g) {
-  return (g.buildings?.training || 1) * (g.unlocked?.includes('grounds') ? 3 : 0.4) + (g.unlocked?.includes('coach') ? 1 : 0);
+function App(){
+ const [game,setGame]=useState(readGame);const [screen,setScreen]=useState('home');const [toast,setToast]=useState('');const [match,setMatch]=useState(null);const [clubDraft,setClubDraft]=useState({name:'FC Adler',short:'FCA',colors:'red'});
+ const income=useMemo(()=>game?incomeRate(game):0,[game]);const power=game?strength(game):0;
+ useEffect(()=>{if(!game)return;const t=setInterval(()=>setGame(g=>g?({...g,coins:g.coins+incomeRate(g),development:g.development+devRate(g),lastSeen:Date.now()}):g),1000);return()=>clearInterval(t);},[!!game]);
+ useEffect(()=>{if(game)localStorage.setItem(SAVE_KEY,JSON.stringify({...game,lastSeen:Date.now()}));},[game]);
+ useEffect(()=>{if(!match||match.status!=='live')return;const t=setInterval(()=>setMatch(m=>{
+  if(!m||m.status!=='live')return m;
+  const minute=m.minute+1;const event=m.events.find(e=>e.minute===minute);
+  let next={...m,minute,homeScore:m.homeScore+(event?.side==='home'?1:0),awayScore:m.awayScore+(event?.side==='away'?1:0),feed:event?[event,...m.feed].slice(0,8):m.feed};
+  if(minute>=90){next.status='done';next.reward=Math.round((next.homeScore>next.awayScore?90:next.homeScore===next.awayScore?48:28)*(1+(12-game.division)*.07));setGame(g=>{
+   const won=next.homeScore>next.awayScore,draw=next.homeScore===next.awayScore;
+   const wins=g.wins+(won?1:0),losses=g.losses+(!won&&!draw?1:0),draws=g.draws+(draw?1:0);
+   const promote=won&&wins%4===0&&g.division>1;
+   return {...g,coins:g.coins+next.reward,fans:g.fans+(won?14:draw?5:1),prestige:g.prestige+(won?6:2),wins,losses,draws,division:promote?g.division-1:g.division,season:promote?g.season+1:g.season,teamPower:g.teamPower+(won?1:0),matchday:g.matchday+1,lastMatch:{opponent:next.opponent,homeScore:next.homeScore,awayScore:next.awayScore,won,draw,reward:next.reward,promote}};});}
+  return next;
+ }),420);return()=>clearInterval(t);},[match?.status,game?.division]);
+ function startMatch(){if(match?.status==='live')return;setMatch(makeMatch(game));setScreen('match');}
+ function upgrade(id){const b=BUILDINGS.find(x=>x.id===id),level=game.buildings[id]||0,cost=Math.floor(b.base*Math.pow(1.7,level));if(game.coins<cost){setToast('Noch nicht genug Coins.');return;}setGame(g=>({...g,coins:g.coins-cost,buildings:{...g.buildings,[id]:level+1}}));}
+ function unlock(n){if(n.requires&&!game.unlocked.includes(n.requires)){setToast('Erst die Voraussetzung freischalten.');return;}if(game.development<n.cost){setToast('Noch nicht genug Entwicklungspunkte.');return;}setGame(g=>({...g,development:g.development-n.cost,unlocked:[...g.unlocked,n.id]}));}
+ if(!game)return <div className="create-screen"><div className="create-art"><div className="crest-big">🦅</div><div className="stadium-glow"/></div><div className="create-panel"><div className="brand-mark">ADLER <em>LEGENDS</em><small>DEINE GESCHICHTE. DEIN VEREIN.</small></div><span className="kicker">KARRIERE BEGINNEN</span><h1>Schreib deine<br/><em>eigene Legende.</em></h1><p>Gründe deinen Verein, stelle dein Team auf und kämpfe dich aus der Kreisklasse bis an die Spitze Europas.</p><label>VEREINSNAME<input maxLength="24" value={clubDraft.name} onChange={e=>setClubDraft({...clubDraft,name:e.target.value})}/></label><label>KURZNAME / KÜRZEL<input maxLength="4" value={clubDraft.short} onChange={e=>setClubDraft({...clubDraft,short:e.target.value.toUpperCase()})}/></label><label>VEREINSFARBEN<div className="color-picks">{['red','blue','gold','green'].map(c=><button key={c} className={'swatch '+c+(clubDraft.colors===c?' picked':'')} onClick={()=>setClubDraft({...clubDraft,colors:c})}/>)}</div></label><button className="big-action" disabled={!clubDraft.name.trim()||!clubDraft.short.trim()} onClick={()=>setGame(freshGame(clubDraft.name.trim(),clubDraft.short.trim(),clubDraft.colors))}>VEREIN GRÜNDEN <b>→</b></button><small className="save-note">Dein Abenteuer beginnt in der Kreisklasse · Saison 1</small></div></div>;
+ const nav=[['home','⌂','Übersicht'],['squad','♟','Mannschaft'],['fixtures','▤','Spielplan'],['training','⚽','Training'],['stadium','🏟','Stadion'],['club','✦','Verein'],['economy','◈','Wirtschaft']];
+ const opponent=opponentFor(game);
+ return <main className={'game-world theme-'+game.colors}>
+  <aside className="game-sidebar"><div className="brand-mark">ADLER <em>LEGENDS</em><small>CLUB MANAGER</small></div><div className="club-identity"><div className="crest-small">🦅</div><div><b>{game.clubName}</b><small>{leagueName(game.division)} · S{game.season}</small></div></div><nav>{nav.map(([id,ico,label])=><button key={id} className={screen===id?'active':''} onClick={()=>setScreen(id)}><span>{ico}</span>{label}</button>)}</nav><div className="sidebar-bottom">● SAISON LÄUFT <small>SPIELTAG {game.matchday} / 34</small></div></aside>
+  <section className="game-main"><header className="game-top"><div><span className="kicker">{leagueName(game.division).toUpperCase()} · SAISON {game.season}</span><h1>{nav.find(n=>n[0]===screen)?.[2]||'Spieltag'}</h1></div><div className="wallet"><div>🪙 <b>{Math.floor(game.coins).toLocaleString('de-DE')}</b><small>+{income}/s</small></div><div>👥 <b>{game.fans.toLocaleString('de-DE')}</b><small>Fans</small></div><div>⚡ <b>{power}</b><small>Teamstärke</small></div></div></header>
+  {toast&&<button className="toast" onClick={()=>setToast('')}>{toast} ×</button>}
+  {screen==='home'&&<div className="game-page"><section className="hero-match"><div className="hero-copy"><span className="kicker">NÄCHSTER SPIELTAG · {game.matchday}. SPIEL</span><h2>Der nächste<br/><em>Schritt nach oben.</em></h2><p>Die Liga wartet. Deine Mannschaft ist bereit. Jeder Spieltag zählt auf dem Weg zur Meisterschaft.</p><button className="big-action" onClick={startMatch}>SPIELTAG STARTEN <b>▶</b></button></div><div className="versus-card"><div className="versus-team"><div className="team-crest">{game.shortName.slice(0,1)}</div><b>{game.clubName}</b><small>HEIM</small></div><div className="versus-mid"><span>VS</span><small>SPIEL {game.matchday}</small></div><div className="versus-team"><div className="team-crest rival">{opponent[0].slice(0,1)}</div><b>{opponent[0]}</b><small>GAST</small></div><div className="versus-bottom">🏟 {game.buildings.stadium<3?'Sportplatz am Waldrand':'Adler-Arena'} <span>· Anstoß 15:30</span></div></div></section>
+  <div className="stat-strip"><div><small>BILANZ</small><b>{game.wins} S · {game.draws} U · {game.losses} N</b></div><div><small>SAISONZIEL</small><b>Aufstieg in die Kreisliga</b></div><div><small>ENTWICKLUNG</small><b>{Math.floor(game.development)} Punkte</b></div><div><small>PRESTIGE</small><b>★ {game.prestige}</b></div></div>
+  {game.lastMatch&&<div className="last-score"><span>LETZTES ERGEBNIS</span><b>{game.lastMatch.homeScore} : {game.lastMatch.awayScore}</b><strong>{game.lastMatch.opponent}</strong><small>{game.lastMatch.promote?'AUFSTIEG GESCHAFFT!':game.lastMatch.won?'SIEG':'SPIEL BEENDET'} · +{game.lastMatch.reward} COINS</small></div>}
+  <section className="section-head"><div><span className="kicker">DEIN CLUB</span><h2>Der Weg zur Legende</h2></div><small>BAUE. ENTWICKLE. SIEGE.</small></section><div className="world-cards"><button onClick={()=>setScreen('squad')}><span>♟</span><b>Mannschaft</b><small>Deine Spieler & Teamstärke</small></button><button onClick={()=>setScreen('training')}><span>⚽</span><b>Trainingszentrum</b><small>Werte und Fitness verbessern</small></button><button onClick={()=>setScreen('stadium')}><span>🏟️</span><b>Stadion</b><small>Dein Zuhause ausbauen</small></button></div></div>}
+  {screen==='match'&&<div className="game-page"><div className="match-stage"><div className="match-scorebar"><div><small>{game.clubName}</small><b>{match?.homeScore??0}</b></div><div className="match-clock">{match?.status==='done'?'ABPFIFF':match?.minute+"'"}<small>{match?.status==='done'?'ENDSTAND':'LIVE-SIMULATION'}</small></div><div><small>{match?.opponent}</small><b>{match?.awayScore??0}</b></div></div><div className="match-pitch"><div className="pitch-lines"><div className="half-line"/><div className="center-circle"/><div className="goal left"/><div className="goal right"/></div><div className="pitch-caption">ADLER ARENA · KREISKLASSE</div></div><div className="match-controls">{match?.status==='live'?<><div className="live-indicator">● LIVE · DIE PARTIE LÄUFT</div><div className="match-progress"><i style={{width:(match.minute/90*100)+'%'}}/></div><p>Die Simulation läuft Minute für Minute. Jedes Tor und jede wichtige Szene wird protokolliert.</p></>:<><b>ABGEPFIFFEN</b><p>{match?.homeScore>match?.awayScore?'Was für ein Auftritt! Deine Mannschaft holt den Sieg.':match?.homeScore===match?.awayScore?'Ein umkämpftes Unentschieden.':'Heute hat es nicht gereicht. Weiterarbeiten!'}</p><button className="big-action" onClick={()=>setScreen('fixtures')}>ZUM SPIELPLAN →</button></>}</div></div><div className="event-log"><h3>SPIELBERICHT</h3>{match?.feed.length?match.feed.map((e,i)=><div className={'event '+e.side} key={i}><b>{e.minute}'</b><span>{e.text}</span></div>):<p>Der Ball rollt. Die ersten Minuten laufen …</p>}</div></div>}
+  {screen==='squad'&&<div className="game-page"><div className="section-head"><div><span className="kicker">KADER · {game.squad.length} SPIELER</span><h2>Die Adler-Elf</h2></div><b className="power-pill">⚡ {power} STÄRKE</b></div><div className="squad-layout"><div className="tactics-pitch"><div className="formation-label">4 – 3 – 3</div>{game.squad.map((p,i)=><div className={'player-dot p'+i} key={p.id}><b>{p.rating}</b><small>{p.pos}</small></div>)}</div><div className="player-list">{game.squad.map(p=><div className="player-row" key={p.id}><b className="player-rating">{p.rating}</b><div><strong>{p.name}</strong><small>{p.pos}</small></div><span>●●●○○</span></div>)}</div></div></div>}
+  {screen==='fixtures'&&<div className="game-page"><div className="section-head"><div><span className="kicker">KREISKLASSE · SPIELTAG {game.matchday}</span><h2>Spielplan & Ergebnisse</h2></div><button className="big-action" onClick={startMatch}>NÄCHSTES SPIEL ▶</button></div><div className="fixture-card next"><span>NÄCHSTE PARTIE · {game.matchday}. SPIELTAG</span><div><b>{game.clubName}</b><strong>VS</strong><b>{opponent[0]}</b></div><small>Gegnerstärke {opponent[1]} · {game.matchday%2?'Heimspiel':'Auswärtsspiel'}</small></div>{game.lastMatch&&<div className="fixture-card"><span>LETZTES ERGEBNIS</span><div><b>{game.clubName}</b><strong>{game.lastMatch.homeScore} : {game.lastMatch.awayScore}</strong><b>{game.lastMatch.opponent}</b></div><small>{game.lastMatch.won?'Sieg':game.lastMatch.draw?'Unentschieden':'Niederlage'}</small></div>}<div className="league-table"><h3>TABELLE · DEIN VEREIN</h3><div className="table-head"><span>PL</span><span>VEREIN</span><span>SP</span><span>PKT</span></div><div className="table-row own"><b>1</b><strong>{game.clubName}</strong><span>{game.wins+game.draws+game.losses}</span><b>{game.wins*3+game.draws}</b></div>{OPPONENTS.slice(0,9).map((o,i)=><div className="table-row" key={o[0]}><span>{i+2}</span><span>{o[0]}</span><span>{Math.max(0,game.matchday-1)}</span><span>{Math.max(0,20-i*2+game.matchday)}</span></div>)}</div></div>}
+  {screen==='training'&&<div className="game-page"><div className="section-head"><div><span className="kicker">LEISTUNGSZENTRUM</span><h2>Training & Entwicklung</h2></div><b className="power-pill">{Math.floor(game.development)} ENTWICKLUNGSPUNKTE</b></div><p className="intro-text">Deine Spieler werden mit jeder Einheit besser. Investiere in Trainingsplätze und entwickle die Stärken deines Teams.</p>{BUILDINGS.filter(b=>b.id==='training').map(b=><BuildingCard key={b.id} b={b} game={game} upgrade={upgrade}/>)}<div className="unlock-grid">{NODES.filter(n=>n.branch==='Team').map(n=><NodeCard key={n.id} n={n} game={game} unlock={unlock}/>)}</div></div>}
+  {screen==='stadium'&&<div className="game-page"><div className="section-head"><div><span className="kicker">UNSER ZUHAUSE</span><h2>Die Adler-Arena</h2></div><b>STUFE {game.buildings.stadium}</b></div><div className="stadium-art"><div className="stadium-roof"/><div className="stadium-stands">ADLER · ADLER · ADLER · ADLER</div><div className="stadium-field"/></div><p className="intro-text">Aus dem kleinen Sportplatz wird eine echte Fußballarena. Jeder Ausbau bringt mehr Kapazität, Fans und Einnahmen.</p>{BUILDINGS.filter(b=>b.id==='stadium').map(b=><BuildingCard key={b.id} b={b} game={game} upgrade={upgrade}/>)}</div>}
+  {screen==='club'&&<div className="game-page"><div className="section-head"><div><span className="kicker">VEREINSENTWICKLUNG</span><h2>Dein Club, deine Vision</h2></div></div><div className="unlock-grid">{NODES.filter(n=>n.branch!=='Team').map(n=><NodeCard key={n.id} n={n} game={game} unlock={unlock}/>)}</div></div>}
+  {screen==='economy'&&<div className="game-page"><div className="section-head"><div><span className="kicker">VEREINSKASSE</span><h2>Wirtschaft & Sponsoren</h2></div><b>+{income} COINS / SEK.</b></div><p className="intro-text">Baue Fanshop und Gastronomie aus. Dein Verein verdient auch dann, wenn du gerade nicht spielst.</p>{BUILDINGS.filter(b=>b.id==='food').map(b=><BuildingCard key={b.id} b={b} game={game} upgrade={upgrade}/>)}<NodeCard n={NODES.find(n=>n.id==='canteen')} game={game} unlock={unlock}/><NodeCard n={NODES.find(n=>n.id==='shop')} game={game} unlock={unlock}/></div>}
+  <div className="game-footer">ADLER LEGENDS <span>VOM KREISKLASSE-PLATZ ZUM TRIPLE.</span></div></section>
+  <nav className="mobile-game-nav">{nav.slice(0,5).map(([id,ico,label])=><button key={id} className={screen===id?'active':''} onClick={()=>setScreen(id)}><span>{ico}</span><small>{label}</small></button>)}</nav>
+ </main>;
 }
-function powerOf(g) {
-  let p = g.teamPower + (g.buildings?.training || 1) * 2 + (g.unlocked?.includes('fitness') ? 8 : 0) + (g.unlocked?.includes('academy') ? g.season * 2 : 0);
-  if (g.unlocked?.includes('synergy')) p *= 1.35;
-  return Math.round(p);
-}
-function divisionName(d) {
-  return d >= 11 ? 'Kreisklasse' : d === 10 ? 'Kreisliga' : d === 9 ? 'Bezirksliga' : d === 8 ? 'Landesliga' : d === 7 ? 'Verbandsliga' : d === 6 ? 'Oberliga' : d === 5 ? 'Regionalliga' : d === 4 ? '3. Liga' : d === 3 ? '2. Bundesliga' : d === 2 ? 'Bundesliga' : 'Champions League';
-}
-function App() {
-  const [game, setGame] = useState(readSave);
-  const [screen, setScreen] = useState('overview');
-  const [toast, setToast] = useState('');
-  const [matchBusy, setMatchBusy] = useState(false);
-  const power = useMemo(() => powerOf(game), [game]);
-  const income = useMemo(() => incomePerSecond(game), [game]);
-  const trainingRate = useMemo(() => trainingPerSecond(game), [game]);
-  const tier = game.division <= 2 ? 4 : game.division <= 5 ? 3 : game.division <= 8 ? 2 : 1;
-
-  useEffect(() => {
-    const timer = setInterval(() => setGame(g => ({ ...g, coins: g.coins + incomePerSecond(g), development: g.development + trainingPerSecond(g), lastSeen: Date.now() })), 1000);
-    return () => clearInterval(timer);
-  }, []);
-  useEffect(() => {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({ ...game, lastSeen: Date.now() }));
-  }, [game]);
-
-  function upgradeBuilding(id) {
-    const current = game.buildings[id] || 0;
-    const def = BUILDINGS.find(b => b.id === id);
-    const cost = Math.floor(def.base * Math.pow(1.72, current));
-    if (game.coins < cost) return setToast('Dafür fehlen noch Vereins-Coins.');
-    setGame(g => ({ ...g, coins: g.coins - cost, buildings: { ...g.buildings, [id]: current + 1 } }));
-    setToast(`${def.name} wurde auf Stufe ${current + 1} ausgebaut.`);
-  }
-  function unlockNode(node) {
-    if (game.unlocked.includes(node.id)) return;
-    if (node.requires && !game.unlocked.includes(node.requires)) return setToast('Schalte zuerst die Voraussetzung frei.');
-    if (game.development < node.cost) return setToast('Es fehlen noch Entwicklungspunkte.');
-    setGame(g => ({ ...g, development: g.development - node.cost, unlocked: [...g.unlocked, node.id] }));
-    setToast(`${node.name} freigeschaltet!`);
-  }
-  function simulateMatch(type = 'league') {
-    if (matchBusy) return;
-    setMatchBusy(true);
-    window.setTimeout(() => {
-      setGame(g => {
-        const strength = powerOf(g);
-        const opponent = Math.round(12 + (12 - g.division) * 8 + g.season * 2 + Math.random() * 18);
-        const scoreA = Math.max(0, Math.floor(Math.random() * 3 + (strength - opponent) / 22));
-        const scoreB = Math.max(0, Math.floor(Math.random() * 3 + (opponent - strength) / 25));
-        const won = scoreA > scoreB;
-        const draw = scoreA === scoreB;
-        const multiplier = g.unlocked.includes('analyst') ? 1.2 : 1;
-        const reward = Math.round((won ? 65 : draw ? 35 : 20) * multiplier * (1 + (12 - g.division) * 0.08));
-        const wins = g.wins + (won ? 1 : 0);
-        const promote = type === 'league' && won && wins % 4 === 0 && g.division > 1;
-        return { ...g, coins: g.coins + reward, fans: g.fans + (won ? 12 : draw ? 4 : 1), prestige: g.prestige + (won ? 5 : 1), wins, losses: g.losses + (!won && !draw ? 1 : 0), division: promote ? g.division - 1 : g.division, season: promote ? g.season + 1 : g.season, teamPower: g.teamPower + (won ? 1 : 0), lastMatch: { scoreA, scoreB, won, draw, reward, type, promote } };
-      });
-      setMatchBusy(false);
-      setToast('Die Partie wurde vollständig simuliert.');
-    }, 850);
-  }
-  const stadiumLevel = game.buildings.stadium;
-  const venue = stadiumLevel < 3 ? 'Sportplatz am Ortsrand' : stadiumLevel < 6 ? 'Kleines Vereinsstadion' : stadiumLevel < 10 ? 'Moderne Fußballarena' : 'Internationales Fußballstadion';
-
-  const nav = [
-    ['overview','⌂','Verein'], ['development','✦','Entwicklung'], ['training','⚽','Trainingsgelände'],
-    ['stadium','▤','Stadion'], ['office','▦','Geschäftsstelle'], ['economy','◈','Wirtschaft'], ['matches','◉','Wettbewerbe'],
-  ];
-  return <main className={`game tier-${tier}`}>
-    <aside className="sidebar">
-      <div className="logo"><div className="logo-emblem">A</div><div><b>ADLER <i>LEGENDS</i></b><small>BUILD YOUR LEGACY</small></div></div>
-      <div className="club-mini"><div className="club-badge">🦅</div><div><b>FC Adler</b><small>{divisionName(game.division)}</small></div></div>
-      <nav>{nav.map(([id,icon,label]) => <button key={id} className={screen===id?'selected':''} onClick={()=>setScreen(id)}><span>{icon}</span>{label}</button>)}</nav>
-      <div className="sidebar-bottom"><span className="online-dot"/> AUTOSAVE AKTIV <small>SAISON {game.season}</small></div>
-    </aside>
-    <section className="main-area">
-      <header className="topbar">
-        <div><span className="eyebrow">DEIN VEREIN · DEINE ENTWICKLUNG</span><h1>{nav.find(n=>n[0]===screen)?.[2] || 'Verein'}</h1></div>
-        <div className="resources"><Resource icon="🪙" value={Math.floor(game.coins).toLocaleString('de-DE')} label={`+${income.toFixed(1)}/s`}/><Resource icon="👥" value={game.fans.toLocaleString('de-DE')} label="Fans"/><Resource icon="⭐" value={game.prestige.toLocaleString('de-DE')} label="Prestige"/></div>
-      </header>
-      {game.offlineGain > 0 && <div className="offline-note">🌙 Während deiner Abwesenheit hat dein Verein {game.offlineGain.toLocaleString('de-DE')} Coins erwirtschaftet.</div>}
-      {toast && <button className="toast" onClick={()=>setToast('')}>{toast} <b>×</b></button>}
-      {screen==='overview' && <Overview game={game} power={power} income={income} venue={venue} onNavigate={setScreen} onMatch={()=>simulateMatch('league')} busy={matchBusy}/>}
-      {screen==='development' && <Development game={game} onUnlock={unlockNode}/>}
-      {screen==='training' && <Facilities game={game} kind="training" onUpgrade={upgradeBuilding} power={power}/>}
-      {screen==='stadium' && <Facilities game={game} kind="stadium" onUpgrade={upgradeBuilding} power={power} venue={venue}/>}
-      {screen==='office' && <Facilities game={game} kind="office" onUpgrade={upgradeBuilding}/>}
-      {screen==='economy' && <Economy game={game} onUpgrade={upgradeBuilding} income={income}/>}
-      {screen==='matches' && <Matches game={game} onMatch={simulateMatch} busy={matchBusy}/>}
-      <footer><span>ADLER LEGENDS</span><span>VOM KREISLIGAPLATZ ZUM TRIPLE.</span></footer>
-    </section>
-    <nav className="mobile-nav">{nav.slice(0,5).map(([id,icon,label])=><button key={id} className={screen===id?'selected':''} onClick={()=>setScreen(id)}><span>{icon}</span><small>{label}</small></button>)}</nav>
-  </main>;
-}
-function Resource({icon,value,label}) { return <div className="resource"><span>{icon}</span><div><b>{value}</b><small>{label}</small></div></div>; }
-function PanelTitle({tag,title,desc}) { return <div className="panel-title"><div><span>{tag}</span><h2>{title}</h2></div><p>{desc}</p></div>; }
-function Overview({game,power,income,venue,onNavigate,onMatch,busy}) {
-  return <div className="page">
-    <section className="welcome-banner"><div className="welcome-copy"><span className="eyebrow">SAISON {String(game.season).padStart(2,'0')} · DER ANFANG EINER ÄRA</span><h2>Vom kleinen Platz<br/><em>nach ganz oben.</em></h2><p>Ein Verein. Große Träume. Baue deine Infrastruktur aus, entwickle dein Team und kämpfe dich bis an die Weltspitze.</p><button className="primary" onClick={onMatch} disabled={busy}>{busy?'SIMULIERE…':'NÄCHSTES SPIEL SIMULIEREN'} <b>→</b></button></div><div className={`ground-scene stage-${Math.min(4,Math.ceil(game.buildings.stadium/3))}`}><div className="scene-lights"/><div className="scene-stand"><span>FC ADLER</span><span>FC ADLER</span></div><div className="scene-pitch"><div className="scene-circle"/></div><div className="scene-label">{venue.toUpperCase()}</div></div></section>
-    <div className="metric-grid"><Metric icon="⚡" label="TEAMSTÄRKE" value={power}/><Metric icon="🏆" label="LIGA" value={game.division===1?'Bundesliga':divisionName(game.division)}/><Metric icon="📈" label="SIEGE" value={game.wins}/><Metric icon="🪙" label="EINNAHMEN" value={`+${income.toFixed(1)} / Sek.`}/></div>
-    {game.lastMatch && <section className="last-result"><div><span>LETZTES ERGEBNIS</span><b>{game.lastMatch.scoreA} : {game.lastMatch.scoreB}</b><small>{game.lastMatch.won?'Sieg eingefahren':game.lastMatch.draw?'Unentschieden':'Niederlage'} · +{game.lastMatch.reward} Coins</small></div>{game.lastMatch.promote&&<strong>AUFSTIEG! 🎉</strong>}</section>}
-    <PanelTitle tag="DEIN VEREIN" title="Was möchtest du ausbauen?" desc="Jede Investition bringt deinen Club einen Schritt weiter."/>
-    <div className="shortcut-grid"><Shortcut icon="✦" title="Entwicklungsbaum" text="Neue Systeme und Synergien" onClick={()=>onNavigate('development')}/><Shortcut icon="🌱" title="Trainingsgelände" text="Spieler und Trainingsplätze" onClick={()=>onNavigate('training')}/><Shortcut icon="🏟️" title="Stadion" text="Kapazität und Atmosphäre" onClick={()=>onNavigate('stadium')}/><Shortcut icon="🍔" title="Vereinswirtschaft" text="Automatische Einnahmen" onClick={()=>onNavigate('economy')}/></div>
-    <section className="goal-banner"><div><span>ULTIMATIVES SAISonzIEL</span><h3>Das Triple. Eine Legende.</h3><p>Bundesliga · DFB-Pokal · Champions League</p></div><div className="trophy-row">🏆 🏆 🏆</div></section>
-  </div>;
-}
-function Metric({icon,label,value}) { return <div className="metric"><span>{icon}</span><div><small>{label}</small><b>{value}</b></div></div>; }
-function Shortcut({icon,title,text,onClick}) { return <button className="shortcut" onClick={onClick}><span>{icon}</span><b>{title}</b><small>{text}</small><i>ÖFFNEN →</i></button>; }
-function Development({game,onUnlock}) {
-  const branches=['Spieler','Infrastruktur','Personal','Wirtschaft','Automatisierung'];
-  return <div className="page"><PanelTitle tag="FORSCHUNG & FORTSCHRITT" title="Der Entwicklungsbaum" desc="Investiere in deinen Verein. Kombiniere Freischaltungen und erschaffe mächtige Synergien."/>
-    <div className="tree-intro"><div><b>✦ Entwicklungspunkte</b><strong>{Math.floor(game.development).toLocaleString('de-DE')}</strong></div><p>Dein Verein sammelt kontinuierlich Erfahrung. Coins finanzieren die Freischaltungen.</p></div>
-    {branches.map(branch=><section className="branch" key={branch}><h3>{branch}</h3><div className="node-grid">{NODES.filter(n=>n.branch===branch).map(node=>{const unlocked=game.unlocked.includes(node.id);const locked=node.requires&&!game.unlocked.includes(node.requires);return <article className={`node ${unlocked?'unlocked':''} ${locked?'locked':''}`} key={node.id}><div className="node-icon">{node.icon}</div><div className="node-copy"><b>{node.name}</b><small>{node.desc}</small>{node.requires&&<em>Voraussetzung: {NODES.find(n=>n.id===node.requires)?.name}</em>}</div><button disabled={unlocked} onClick={()=>onUnlock(node)}>{unlocked?'✓ FREI':`✦ ${node.cost}`}</button></article>})}</div></section>)}
-  </div>;
-}
-function Facilities({game,kind,onUpgrade,power,venue}) {
-  const def=BUILDINGS.find(b=>b.id===kind);const level=game.buildings[kind]||0;const cost=Math.floor(def.base*Math.pow(1.72,level));
-  const descriptions={training:['Platz mit Kreidelinien','Zwei gepflegte Trainingsplätze','Trainingszentrum mit Fitnessbereich','Modernes Leistungszentrum'],stadium:['Einfacher Sportplatz','Kleine überdachte Tribüne','Flutlicht und neue Ränge','Moderne Arena mit VIP-Bereich'],office:['Ein Raum im Vereinsheim','Kleine Geschäftsstelle','Mehrere Abteilungen','Professionelles Club-Hauptquartier'],food:['Ein Getränkestand','Kiosk und Imbiss','Fanshop und Gastronomie','Kommerzielle Vereinswelt']};
-  return <div className="page"><PanelTitle tag="VEREINSENTWICKLUNG" title={def.name} desc={def.description}/><div className={`facility-visual facility-${kind} stage-${Math.min(4,Math.max(1,level))}`}><div className="facility-sky"/><div className="facility-object">{def.icon}</div><div className="facility-scene-title">{descriptions[kind][Math.min(3,Math.floor((level-1)/2))]}</div><div className="facility-scene-level">AUSBAUSTUFE {level}</div></div><div className="facility-detail"><div><span>AKTUELLER AUSBAU</span><h3>{descriptions[kind][Math.min(3,Math.floor((level-1)/2))]}</h3><p>{kind==='stadium'?venue:`Dein ${def.name.toLowerCase()} entwickelt sich mit jeder Ausbaustufe sichtbar weiter.`}</p></div><div className="facility-level"><small>STUFE</small><b>{level}</b></div></div><div className="upgrade-card"><div><span>NÄCHSTE VERBESSERUNG</span><h3>{def.gain} steigern</h3><p>Jede Stufe verbessert die Leistungsfähigkeit deines Vereins.</p></div><button className="primary" onClick={()=>onUpgrade(kind)}>AUSBAUEN · 🪙 {cost.toLocaleString('de-DE')}</button></div></div>;
-}
-function Economy({game,onUpgrade,income}) {
-  return <div className="page"><PanelTitle tag="VEREINSBETRIEB" title="Wirtschaft & Einnahmen" desc="Baue Verkaufsstellen auf und lass deinen Verein automatisch Geld verdienen."/><div className="economy-total"><span>PASSIVES EINKOMMEN</span><b>🪙 {income.toFixed(1)} <small>Coins / Sekunde</small></b></div><div className="economy-grid">{BUILDINGS.filter(b=>b.id==='food'||b.id==='office').map(b=><FacilityCard key={b.id} b={b} game={game} onUpgrade={onUpgrade}/>) }{NODES.filter(n=>['canteen','shop','chef','automation'].includes(n.id)).map(n=><div className="economy-card" key={n.id}><span>{n.icon}</span><b>{n.name}</b><small>{n.desc}</small><em>{game.unlocked.includes(n.id)?'FREIGESCHALTET':'Im Entwicklungsbaum verfügbar'}</em></div>)}</div></div>;
-}
-function FacilityCard({b,game,onUpgrade}) {const level=game.buildings[b.id]||0;const cost=Math.floor(b.base*Math.pow(1.72,level));return <div className="economy-card"><span>{b.icon}</span><b>{b.name}</b><small>Stufe {level} · {b.description}</small><button onClick={()=>onUpgrade(b.id)}>Ausbauen · {cost} Coins</button></div>}
-function Matches({game,onMatch,busy}) {
-  return <div className="page"><PanelTitle tag="WETTBEWERBE" title="Der Weg nach oben" desc="Alle Partien werden simuliert. Stärke deinen Verein und steige in höhere Wettbewerbe auf."/><div className="competition-list"><Competition icon="⚽" title="Ligabetrieb" subtitle={divisionName(game.division)} status="AKTIV" onClick={()=>onMatch('league')} busy={busy}/><Competition icon="🏆" title="Nationaler Pokal" subtitle={game.division<=8?'Wird in einer späteren Ausbaustufe freigeschaltet':'Noch nicht verfügbar'} status={game.division<=8?'BALD':'GESPERRT'} onClick={()=>onMatch('cup')} busy={busy} disabled={game.division>8}/><Competition icon="🌍" title="Champions League" subtitle={game.division<=2?'Qualifikation in Reichweite':'Erst Bundesliga erreichen'} status={game.division<=2?'ZIEL':'GESPERRT'} onClick={()=>onMatch('europe')} busy={busy} disabled={game.division>2}/></div><div className="season-progress"><span>SAISONFORTSCHRITT</span><b>{game.wins % 4}/4 Siege bis zum nächsten Aufstieg</b><div className="progress"><i style={{width:`${(game.wins%4)*25}%`}}/></div></div><button className="primary" onClick={()=>onMatch('league')} disabled={busy}>{busy?'SIMULIERE…':'LIGASPIEL SIMULIEREN →'}</button></div>;
-}
-function Competition({icon,title,subtitle,status,onClick,busy,disabled}) {return <div className={`competition ${disabled?'disabled':''}`}><span>{icon}</span><div><b>{title}</b><small>{subtitle}</small></div><em>{status}</em><button disabled={disabled||busy} onClick={onClick}>SIMULIEREN</button></div>}
-
+function BuildingCard({b,game,upgrade}){const level=game.buildings[b.id]||0,cost=Math.floor(b.base*Math.pow(1.7,level));return <div className="building-card"><span>{b.icon}</span><div><b>{b.name}</b><small>Stufe {level} · {b.desc}</small></div><button onClick={()=>upgrade(b.id)}>AUSBAUEN · {cost} 🪙</button></div>}
+function NodeCard({n,game,unlock}){if(!n)return null;const yes=game.unlocked.includes(n.id),locked=n.requires&&!game.unlocked.includes(n.requires);return <div className="node-card"><span>{n.icon}</span><div><b>{n.name}</b><small>{n.desc}</small></div><button disabled={yes||locked||game.development<n.cost} onClick={()=>unlock(n)}>{yes?'FREI':n.cost+' EP'}</button></div>}
 export default App;
