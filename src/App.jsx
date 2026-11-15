@@ -59,7 +59,7 @@ function App(){
  useEffect(()=>{if(game)localStorage.setItem(SAVE_KEY,JSON.stringify({...game,lastSeen:Date.now()}));},[game]);
  useEffect(()=>{if(!match||match.status!=='live')return;const t=setInterval(()=>setMatch(m=>{
   if(!m||m.status!=='live')return m;
-  const minute=m.minute+1;let event=m.events.find(e=>e.minute===minute);let points=m.points+(minute%3===0?1:0)+(minute%10===0?2:0);
+  const minute=m.minute+1;let event=m.events.find(e=>e.minute===minute);if(event?.side==='away'&&m.activeBoost&&minute<m.boostUntil&&['Adler-Mauer','SUPERPOWER: ADLERSTURM'].includes(m.activeBoost))event={minute,text:'🛡️ '+m.activeBoost+' blockt den gegnerischen Angriff!',side:'boost'};let points=m.points+(minute%3===0?1:0)+(minute%10===0?2:0);
   if(minute>=m.pickupAt&&minute<m.pickupAt+2){event={minute,text:'✨ Power-Kern eingesammelt! +5 Matchpunkte',side:'boost'};points+=5;}
   if(m.activeBoost&&minute<m.boostUntil&&minute%5===0)event={minute,text:'⚡ '+m.activeBoost+' wirkt – dein Team dominiert!',side:'boost'};
   const attackBonus=m.activeBoost==='Turbo-Angriff'&&minute<m.boostUntil?.12:0;
