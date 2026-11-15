@@ -105,40 +105,20 @@ function App(){
 
 
 function MatchAudio({match,game}){
- const [enabled,setEnabled]=useState(false);
- const [volume,setVolume]=useState(55);
- const audioRef=useRef(null);
- const lastEvent=useRef('');
+ const [enabled,setEnabled]=useState(false),[volume,setVolume]=useState(65),[tracks,setTracks]=useState([]),[musicIndex,setMusicIndex]=useState(0),[musicOn,setMusicOn]=useState(false);
+ const ctxRef=useRef(null),masterRef=useRef(null),musicRef=useRef(null),urlsRef=useRef([]);
  const leagueLevel=Math.max(0,Math.min(10,11-game.division));
- useEffect(()=>{
-  if(!enabled||match?.status!=='live')return;
-  const AudioCtx=window.AudioContext||window.webkitAudioContext;
-  if(!AudioCtx)return;
-  const ctx=new AudioCtx();audioRef.current=ctx;
-  const master=ctx.createGain();master.gain.value=volume/100;master.connect(ctx.destination);
-  const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=450+leagueLevel*115;filter.connect(master);
-  const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);const data=buffer.getChannelData(0);
-  for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*.28;
-  const crowd=ctx.createBufferSource();crowd.buffer=buffer;crowd.loop=true;
-  const crowdGain=ctx.createGain();crowdGain.gain.value=.10+leagueLevel*.035;crowd.connect(filter);filter.connect(crowdGain);crowdGain.connect(master);crowd.start();
-  const hum=ctx.createOscillator();hum.type='sawtooth';hum.frequency.value=75+leagueLevel*9;
-  const humGain=ctx.createGain();humGain.gain.value=.012+leagueLevel*.003;hum.connect(humGain);humGain.connect(master);hum.start();
-  return ()=>{try{crowd.stop();hum.stop();ctx.close();}catch{}};
- },[enabled,match?.status,leagueLevel,volume]);
- useEffect(()=>{
-  if(!enabled||!match)return;
-  const ctx=audioRef.current;if(!ctx||ctx.state==='closed')return;
-  const latest=match.feed?.[0];if(!latest||lastEvent.current===latest.minute+latest.text)return;
-  lastEvent.current=latest.minute+latest.text;
-  const now=ctx.currentTime;
-  const tone=(freq,dur,type='sine',gain=.1)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(freq,now);g.gain.setValueAtTime(gain,now);g.gain.exponentialRampToValueAtTime(.001,now+dur);o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+dur);};
-  if(latest.text.includes('Tor')){tone(115,.16,'triangle',.18);tone(440,.35,'sine',.08);}
-  else if(latest.text.includes('Karte'))tone(1450,.22,'square',.035);
-  else tone(170,.09,'triangle',.12);
-  if(latest.text.includes('Tor')&&window.speechSynthesis){const u=new SpeechSynthesisUtterance('Toooor!');u.lang='de-DE';u.rate=.85;u.volume=volume/100;window.speechSynthesis.speak(u);}
- },[match?.feed?.[0]?.minute,enabled,volume]);
- const coach=()=>{if(!enabled)return;const lines=leagueLevel>7?['Weiter, weiter!','Raus auf den Ball!','Zusammen bleiben!']:leagueLevel>3?['Verschieben!','Druck machen!','Hintermann sichern!']:['Auf gehts!','Spiel den Pass!','Bleib dran!'];if(window.speechSynthesis){const u=new SpeechSynthesisUtterance(lines[Math.floor(Math.random()*lines.length)]);u.lang='de-DE';u.rate=1.08;u.volume=volume/100;window.speechSynthesis.speak(u);}};
- return <div className="match-audio-panel"><div className="audio-label"><span>🔊 MATCH-SOUND</span><small>{leagueLevel>7?'KREISKLASSE-SPORTPLATZ':leagueLevel>3?'LIGA-STADION':'GROSSE STADIONKULISSE'}</small></div><button className={enabled?'audio-toggle active':'audio-toggle'} onClick={()=>{setEnabled(v=>!v);if(!enabled&&audioRef.current?.state==='suspended')audioRef.current.resume();}}>{enabled?'SOUND AN':'SOUND AUS'}</button><input aria-label="Match-Lautstärke" type="range" min="0" max="100" value={volume} onChange={e=>setVolume(Number(e.target.value))}/><button className="coach-call" onClick={coach} disabled={!enabled}>📣 Trainer-Ruf</button></div>;
+ const musicFiles=files=>{urlsRef.current.forEach(URL.revokeObjectURL);const list=Array.from(files||[]).filter(f=>f.type.startsWith('audio/')).map(f=>({name:f.name,url:URL.createObjectURL(f)}));urlsRef.current=list.map(x=>x.url);setTracks(list);setMusicIndex(0);setMusicOn(false);};
+ const startSound=()=>{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;let ctx=ctxRef.current;if(!ctx){ctx=new C();ctxRef.current=ctx;const master=ctx.createGain();master.gain.value=volume/100*.55;master.connect(ctx.destination);masterRef.current=master;const buffer=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;const noise=ctx.createBufferSource();noise.buffer=buffer;noise.loop=true;const filter=ctx.createBiquadFilter();filter.type='bandpass';filter.frequency.value=leagueLevel>7?950:leagueLevel>3?650:420;filter.Q.value=.6;const crowd=ctx.createGain();crowd.gain.value=.12+leagueLevel*.025;noise.connect(filter);filter.connect(crowd);crowd.connect(master);noise.start();const hum=ctx.createOscillator(),hg=ctx.createGain();hum.type='sine';hum.frequency.value=58+leagueLevel*7;hg.gain.value=.018+leagueLevel*.003;hum.connect(hg);hg.connect(master);hum.start();}ctx.resume().then(()=>setEnabled(true));};
+ const stopSound=()=>{setEnabled(false);if(ctxRef.current){ctxRef.current.close().catch(()=>{});ctxRef.current=null;masterRef.current=null;}};
+ const playMusic=()=>{if(!tracks.length)return;const item=tracks[musicIndex];if(!musicRef.current||musicRef.current.src!==item.url){musicRef.current?.pause();musicRef.current=new Audio(item.url);musicRef.current.loop=true;}musicRef.current.volume=volume/100;musicRef.current.play().then(()=>setMusicOn(true)).catch(()=>setMusicOn(false));};
+ const stopMusic=()=>{musicRef.current?.pause();setMusicOn(false);};
+ const effect=kind=>{const ctx=ctxRef.current;if(!ctx||ctx.state!=='running')return;const t=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain();o.type=kind==='whistle'?'sine':'triangle';o.frequency.setValueAtTime(kind==='whistle'?1750:kind==='goal'?420:105,t);if(kind==='whistle')o.frequency.exponentialRampToValueAtTime(1250,t+.32);g.gain.setValueAtTime(kind==='kick'?.18:.11,t);g.gain.exponentialRampToValueAtTime(.001,t+(kind==='whistle'?.34:.16));o.connect(g);g.connect(masterRef.current);o.start(t);o.stop(t+(kind==='whistle'?.35:.17));};
+ useEffect(()=>{if(masterRef.current&&ctxRef.current)masterRef.current.gain.setTargetAtTime(volume/100*.55,ctxRef.current.currentTime,.08);if(musicRef.current)musicRef.current.volume=volume/100;},[volume]);
+ useEffect(()=>{if(!enabled||!match?.feed?.[0])return;const e=match.feed[0];if(e.text.includes('Tor'))effect('goal');else if(e.text.includes('Karte'))effect('whistle');else if(e.text.includes('Chance')||e.text.includes('Power'))effect('kick');},[match?.feed?.[0]?.minute,enabled]);
+ useEffect(()=>()=>{musicRef.current?.pause();urlsRef.current.forEach(URL.revokeObjectURL);if(ctxRef.current)ctxRef.current.close().catch(()=>{});},[]);
+ const coach=()=>{if(!enabled)return;effect('whistle');if(window.speechSynthesis){const lines=leagueLevel>7?['Weiter, weiter!','Raus auf den Ball!','Zusammen bleiben!']:leagueLevel>3?['Verschieben!','Druck machen!','Hintermann sichern!']:['Auf gehts!','Spiel den Pass!','Bleib dran!'];const u=new SpeechSynthesisUtterance(lines[Math.floor(Math.random()*lines.length)]);u.lang='de-DE';u.rate=1.05;u.volume=volume/100;window.speechSynthesis.speak(u);}};
+ return <div className="match-audio-panel"><div className="audio-label"><span>🔊 STADION & SOUNDTRACK</span><small>{leagueLevel>7?'KREISKLASSE-SPORTPLATZ':leagueLevel>3?'LIGA-STADION':'GROSSE STADIONKULISSE'}</small></div><button className={enabled?'audio-toggle active':'audio-toggle'} onClick={enabled?stopSound:startSound}>{enabled?'STADION AN':'SOUND AKTIVIEREN'}</button><label className="music-upload">＋ DEINE MUSIK<input type="file" accept="audio/*" multiple onChange={e=>musicFiles(e.target.files)}/></label>{tracks.length>0&&<><select value={musicIndex} onChange={e=>{stopMusic();setMusicIndex(Number(e.target.value));}}>{tracks.map((t,i)=><option value={i} key={t.url}>{t.name}</option>)}</select><button className="audio-toggle" onClick={musicOn?stopMusic:playMusic}>{musicOn?'MUSIK PAUSIEREN':'MUSIK ABSPIELEN'}</button></>}<input aria-label="Lautstärke" type="range" min="0" max="100" value={volume} onChange={e=>setVolume(Number(e.target.value))}/><button className="coach-call" onClick={coach} disabled={!enabled}>📣 Trainer-Ruf</button></div>;
 }
 function PlayerDevelopment({player,onTrain}){
  if(!player)return null;
