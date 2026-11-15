@@ -15,3 +15,25 @@
 .pitch-legend span+span i{background:#e6c77d;border-color:#263d57}
 .live-pitch .pitch-caption{position:static;text-align:center;color:#9cac9d;font-size:7px;letter-spacing:2px}
 @media(max-width:700px){.live-pitch{height:clamp(300px,90vw,440px);padding:7px;gap:6px}.stadium-crowd{font-size:8px;height:20px}.pitch-legend{font-size:7px}.live-pitch .pitch-caption{font-size:6px}}
+
+/* Player cards and visible career progression */
+.player-row{width:100%;color:#f7f4ee;text-align:left;cursor:pointer;font:inherit;transition:transform .16s,border-color .16s,background .16s}
+.player-row:hover{transform:translateX(2px);border-color:#b99b60}
+.player-row.chosen{background:linear-gradient(100deg,#3b3322,#253026);border-color:#d2b46e;box-shadow:inset 3px 0 #e4c477}
+.player-row>span{font-size:8px;letter-spacing:.5px;color:#c4ae7a}
+.player-row.rarity-uncommon{border-left:3px solid #55b987}.player-row.rarity-rare{border-left:3px solid #5c9ce8}.player-row.rarity-epic{border-left:3px solid #b77af0}.player-row.rarity-legendary{border-left:3px solid #e7b94c}
+.player-development{margin-top:18px;padding:18px;background:linear-gradient(145deg,#202a22,#171e19);border:1px solid #ffffff20;border-radius:10px;box-shadow:0 14px 35px #0003}
+.player-development.rarity-panel-rare{border-color:#4779b0}.player-development.rarity-panel-epic{border-color:#8555b1}.player-development.rarity-panel-legendary{border-color:#a98637;box-shadow:0 0 25px #b68b3220}
+.player-profile-head{display:flex;align-items:center;gap:13px;padding-bottom:15px;border-bottom:1px solid #ffffff18}
+.player-avatar{width:58px;height:58px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(145deg,#3d5140,#202a22);font-size:28px;border:1px solid #ffffff24}
+.rarity-avatar-uncommon{background:linear-gradient(145deg,#245f49,#1d3428);border-color:#55b987}.rarity-avatar-rare{background:linear-gradient(145deg,#234b79,#1b2b40);border-color:#5c9ce8}.rarity-avatar-epic{background:linear-gradient(145deg,#563478,#2a1c3b);border-color:#b77af0}.rarity-avatar-legendary{background:linear-gradient(145deg,#856125,#3e2d17);border-color:#e7b94c}
+.player-profile-title{flex:1;min-width:0}.player-profile-title h2{font:800 25px 'Barlow Condensed';margin:3px 0}.player-profile-title small{font-size:9px;color:#aab5ab}
+.player-overall{text-align:center;padding:7px 13px;border-radius:8px;background:#303b2e;border:1px solid #69764d}.player-overall b{display:block;font:900 30px 'Barlow Condensed';color:#f0d28b}.player-overall small{font-size:7px;color:#b9c2b8;letter-spacing:1px}
+.level-line{display:flex;justify-content:space-between;margin:15px 0 7px;font-size:9px;color:#c9d3c8}.level-line b{color:#f0d28b;letter-spacing:1px}.level-line span{color:#aab5ab}
+.xp-track,.attribute-track{height:7px;background:#0e1510;border-radius:9px;overflow:hidden;border:1px solid #ffffff12}.xp-track i{display:block;height:100%;background:linear-gradient(90deg,#b38a42,#f2d68e);border-radius:9px;transition:width .3s}
+.attribute-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+.attribute>div:first-child{display:flex;justify-content:space-between;gap:5px;align-items:center;margin-bottom:6px}.attribute span{font-size:9px;color:#c1cbc1}.attribute b{font:800 15px Rajdhani;color:#f0d28b}.attribute-track{height:5px}.attribute-track i{display:block;height:100%;background:linear-gradient(90deg,#477d54,#a4c27b);border-radius:8px}
+.training-actions{padding:13px;background:#151d17;border:1px solid #ffffff13;border-radius:7px}.training-actions>div:first-child b,.training-actions>div:first-child small{display:block}.training-actions>div:first-child b{font:800 17px 'Barlow Condensed'}.training-actions>div:first-child small{font-size:8px;color:#a4b0a5;margin-top:4px}
+.training-buttons{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}.training-buttons button{border:1px solid #76643f;border-radius:4px;background:#393222;color:#f2d99c;padding:8px 10px;font-size:8px;font-weight:800}.training-buttons button:disabled{opacity:.35;cursor:not-allowed}
+.evolution-track{display:flex;align-items:center;gap:7px;margin-top:16px}.evolution-track span{font-size:8px;color:#758176;white-space:nowrap}.evolution-track span.reached{color:#e8ca82;font-weight:900}.evolution-track i{height:2px;flex:1;background:#414b3f}
+@media(max-width:700px){.player-development{padding:13px}.player-profile-title h2{font-size:21px}.player-avatar{width:48px;height:48px}.attribute-grid{grid-template-columns:repeat(2,1fr);gap:10px}.training-buttons button{flex:1 1 30%;padding:9px 5px;font-size:7px}.evolution-track{gap:4px}.evolution-track span{font-size:6px}}
